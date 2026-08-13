@@ -386,6 +386,72 @@
     padding: 0 24px 40px;
   }
 
+  /* ============ MV 专区（B站官方嵌入） ============ */
+  .mv-subhead {
+    text-align: center;
+    font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+    font-weight: 700;
+    color: var(--text-on-dark);
+    margin: 10px 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .mv-subdesc {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-on-dark-dim);
+    margin-bottom: 34px;
+    line-height: 1.7;
+  }
+  .mv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 26px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+  }
+  .mv-card {
+    background: var(--bg-white);
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 12px 38px rgba(0, 0, 0, 0.35);
+    transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+  }
+  .mv-card:hover { transform: translateY(-5px); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5); }
+  .mv-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+  }
+  .mv-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  .mv-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    margin-top: 12px;
+    padding: 0 4px;
+  }
+  .mv-src {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    padding: 0 4px;
+  }
+  .mv-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-on-dark-dim);
+    padding: 0 24px 60px;
+  }
+
   /* ============ 时间线 ============ */
   .timeline-wrap { max-width: 760px; margin: 0 auto; padding: 20px 24px 130px; }
   .timeline { position: relative; padding-left: 34px; }
@@ -728,15 +794,23 @@
   </div>
 </section>
 
-<!-- ================= 音乐馆（官方平台直达） ================= -->
+<!-- ================= 音乐馆（官方影音） ================= -->
 <section class="section-dark" id="music">
   <div class="section-head reveal">
-    <span class="kicker">Official Links · 网易云 / QQ 音乐</span>
-    <h2>音乐馆 · 去官方平台听</h2>
-    <p>许嵩的歌曲为付费 VIP 曲目，无法在网页内直接播放。点击下方按钮，跳转到网易云音乐 / QQ 音乐官方页面收听。</p>
+    <span class="kicker">Official · Bilibili / 网易云 / QQ 音乐</span>
+    <h2>音乐馆 · 官方影音</h2>
+    <p>许嵩本人与所属厂牌（太合音乐）发布的官方 MV 可在网页内直接播放；其余单曲为付费 VIP 曲目，提供官方平台直达链接。</p>
   </div>
+
+  <h3 class="mv-subhead reveal">🎬 官方 MV · 在线播放</h3>
+  <p class="mv-subdesc reveal">由 Bilibili 官方播放器提供 · 全部来自许嵩本人与太合音乐的官方账号</p>
+  <div class="mv-grid" id="mvGrid"></div>
+
+  <h3 class="mv-subhead reveal">🎵 单曲 · 去官方平台听</h3>
+  <p class="mv-subdesc reveal">以下歌曲为 VIP 付费曲目，无法在网页内直接播放，点击按钮跳转平台收听</p>
   <div class="link-grid" id="musicGrid"></div>
-  <p class="m-note">本站不存储、不传播任何音频文件，音乐版权归许嵩及原权利人所有。</p>
+
+  <p class="mv-note">本站不存储、不传播任何音频或视频文件，全部内容由 Bilibili / 网易云音乐 / QQ 音乐官方提供，版权归原权利人所有。</p>
 </section>
 
 <!-- ================= 时间线 ================= -->
@@ -830,11 +904,36 @@
 <footer>
   <div class="foot-inner">
     <p>许嵩 · Vae 成名之路 — 致敬经典唱作人</p>
-    <p>本页面为设计演示，文字内容仅供学习参考 · 音乐链接指向网易云音乐 / QQ 音乐官方页面，版权归原权利人所有</p>
+    <p>本页面为设计演示，文字内容仅供学习参考 · 音乐与 MV 由 Bilibili / 网易云音乐 / QQ 音乐官方提供，版权归原权利人所有</p>
   </div>
 </footer>
 
 <script>
+  /* ================= MV 专区：B站官方账号视频（可嵌入） =================
+     仅收录许嵩本人（mid=647208864）与太合音乐（mid=37791459）官方账号发布的 MV。
+     想增删：编辑 MVS 数组，bvid 为 B 站视频号。 */
+  const MVS = [
+    { bvid: 'BV1H64y127hM', title: '乌鸦（官方MV）',      src: '许嵩官方 · 《呼吸之野》2021' },
+    { bvid: 'BV1WU4y1a7sW', title: '老古董（官方MV）',    src: '太合音乐 · 《寻宝游戏》2018' },
+    { bvid: 'BV1sb4y1Q74g', title: '如约而至（官方MV）',  src: '太合音乐 · 《寻宝游戏》2018' },
+    { bvid: 'BV1yy4y187SF', title: '装糊涂（官方MV）',    src: '太合音乐 · 官方单曲 2019' },
+    { bvid: 'BV1Yp4y1h7LU', title: '弹指一挥间（官方MV）', src: '太合音乐 · 《不如吃茶去》2014' },
+  ];
+
+  const mvGrid = document.getElementById('mvGrid');
+  MVS.forEach((m) => {
+    const card = document.createElement('div');
+    card.className = 'mv-card reveal';
+    card.innerHTML =
+      '<div class="mv-frame">' +
+        '<iframe src="https://player.bilibili.com/player.html?bvid=' + m.bvid + '&page=1&high_quality=1&danmaku=0" ' +
+        'scrolling="no" frameborder="no" allowfullscreen="true" loading="lazy" title="' + m.title + '"></iframe>' +
+      '</div>' +
+      '<div class="mv-title">' + m.title + '</div>' +
+      '<div class="mv-src">' + m.src + '</div>';
+    mvGrid.appendChild(card);
+  });
+
   /* ================= 音乐馆：官方平台直达 =================
      每首歌提供 网易云 + QQ音乐 官方页面链接（点击跳转收听）。
      想增删歌曲：编辑 SONGS 数组；netease 为网易云歌曲 ID，qq 为 QQ音乐 songmid。 */
