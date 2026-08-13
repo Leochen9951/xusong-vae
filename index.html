@@ -338,44 +338,47 @@
   .cover-6 { background: linear-gradient(135deg, #a8edea, #fed6e3); }
   .cover-6 span { color: #333 !important; text-shadow: none !important; }
 
-  /* ============ 音乐馆（网易云官方播放器） ============ */
-  .music-grid {
+  /* ============ 音乐馆（官方平台直达） ============ */
+  .link-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 24px;
     max-width: 1080px;
     margin: 0 auto;
-    padding: 10px 24px 130px;
+    padding: 10px 24px 110px;
   }
-  .m-card {
+  .l-card {
     background: var(--bg-white);
     border-radius: 22px;
-    padding: 20px 20px 14px;
+    padding: 24px;
     box-shadow: 0 12px 38px rgba(0, 0, 0, 0.35);
     transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
     display: flex;
     flex-direction: column;
+    gap: 16px;
+  }
+  .l-card:hover { transform: translateY(-5px); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5); }
+  .l-title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+  .l-album { font-size: 0.85rem; color: var(--text-secondary); margin-top: 3px; }
+  .l-btns { display: flex; gap: 12px; margin-top: 2px; }
+  .l-btns a {
+    flex: 1;
+    display: inline-flex;
     align-items: center;
-    gap: 12px;
-  }
-  .m-card:hover { transform: translateY(-5px); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5); }
-  .m-info {
-    display: flex;
-    align-items: baseline;
     justify-content: center;
-    gap: 10px;
-    width: 100%;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 980px;
+    color: #fff;
+    white-space: nowrap;
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
   }
-  .m-title { font-size: 1.12rem; font-weight: 700; letter-spacing: -0.01em; }
-  .m-album { font-size: 0.85rem; color: var(--text-secondary); }
-  .m-card iframe {
-    border: none;
-    width: 330px;
-    height: 86px;
-    max-width: 100%;
-    border-radius: 10px;
-    overflow: hidden;
-  }
+  .l-btns a:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-netease { background: #c20c0c; }
+  .btn-qqmusic { background: #31c27c; }
   .m-note {
     text-align: center;
     font-size: 12px;
@@ -508,7 +511,8 @@
   }
 
   @media (max-width: 560px) {
-    .music-grid { grid-template-columns: 1fr; padding: 10px 16px 110px; }
+    .link-grid { grid-template-columns: 1fr; padding: 10px 16px 90px; }
+    .l-btns a { font-size: 13px; padding: 9px 10px; }
   }
 </style>
 </head>
@@ -724,15 +728,15 @@
   </div>
 </section>
 
-<!-- ================= 音乐馆（网易云官方播放器） ================= -->
+<!-- ================= 音乐馆（官方平台直达） ================= -->
 <section class="section-dark" id="music">
   <div class="section-head reveal">
-    <span class="kicker">Official Player · 网易云音乐</span>
-    <h2>音乐馆 · 边读边听</h2>
-    <p>歌曲由网易云音乐官方播放器提供，从官方服务器直接播放，本站不存储、不传播任何音频文件。</p>
+    <span class="kicker">Official Links · 网易云 / QQ 音乐</span>
+    <h2>音乐馆 · 去官方平台听</h2>
+    <p>许嵩的歌曲为付费 VIP 曲目，无法在网页内直接播放。点击下方按钮，跳转到网易云音乐 / QQ 音乐官方页面收听。</p>
   </div>
-  <div class="music-grid" id="musicGrid"></div>
-  <p class="m-note">提示：浏览器会拦截自动播放，点击播放器上的 ▶ 即可收听；音乐版权归许嵩及原权利人所有。</p>
+  <div class="link-grid" id="musicGrid"></div>
+  <p class="m-note">本站不存储、不传播任何音频文件，音乐版权归许嵩及原权利人所有。</p>
 </section>
 
 <!-- ================= 时间线 ================= -->
@@ -826,36 +830,37 @@
 <footer>
   <div class="foot-inner">
     <p>许嵩 · Vae 成名之路 — 致敬经典唱作人</p>
-    <p>本页面为设计演示，文字内容仅供学习参考 · 音乐由网易云音乐官方播放器提供，版权归原权利人所有</p>
+    <p>本页面为设计演示，文字内容仅供学习参考 · 音乐链接指向网易云音乐 / QQ 音乐官方页面，版权归原权利人所有</p>
   </div>
 </footer>
 
 <script>
-  /* ================= 音乐馆：网易云官方播放器 =================
-     想增删歌曲：编辑 SONGS 数组，id 为网易云歌曲 ID。
-     获取歌曲 ID 方法：网易云网页版打开歌曲 → 地址栏 music.163.com/#/song?id=XXXX 中的数字。 */
+  /* ================= 音乐馆：官方平台直达 =================
+     每首歌提供 网易云 + QQ音乐 官方页面链接（点击跳转收听）。
+     想增删歌曲：编辑 SONGS 数组；netease 为网易云歌曲 ID，qq 为 QQ音乐 songmid。 */
   const SONGS = [
-    { id: 167827,     title: '素颜',     album: '寻雾启示' },
-    { id: 167876,     title: '有何不可', album: '自定义' },
-    { id: 167844,     title: '灰色头像', album: '寻雾启示' },
-    { id: 167732,     title: '千百度',   album: '苏格拉没有底' },
-    { id: 167937,     title: '断桥残雪', album: '断桥残雪' },
-    { id: 411214279,  title: '雅俗共赏', album: '青年晚报' },
-    { id: 1842784921, title: '乌鸦',     album: '呼吸之野' },
+    { title: '素颜',     album: '寻雾启示',     netease: 167827,    qq: '004Gq0xE1YC8xp' },
+    { title: '有何不可', album: '自定义',       netease: 167876,    qq: '002mZevo3wHvsc' },
+    { title: '灰色头像', album: '寻雾启示',     netease: 167844,    qq: '003cLs112yMAcW' },
+    { title: '千百度',   album: '苏格拉没有底', netease: 167732,    qq: '000rys863Az3Us' },
+    { title: '断桥残雪', album: '断桥残雪',     netease: 167937,    qq: '004ENQPZ0dHaqy' },
+    { title: '雅俗共赏', album: '青年晚报',     netease: 411214279, qq: '001FGQba3i10mw' },
+    { title: '乌鸦',     album: '呼吸之野',     netease: 1842784921, qq: '001zINAl3eQ65I' },
   ];
 
   const grid = document.getElementById('musicGrid');
   SONGS.forEach((s) => {
     const card = document.createElement('div');
-    card.className = 'm-card reveal';
+    card.className = 'l-card reveal';
     card.innerHTML =
-      '<div class="m-info">' +
-        '<span class="m-title">' + s.title + '</span>' +
-        '<span class="m-album">《' + s.album + '》</span>' +
+      '<div>' +
+        '<div class="l-title">' + s.title + '</div>' +
+        '<div class="l-album">《' + s.album + '》· 许嵩</div>' +
       '</div>' +
-      '<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" ' +
-        'src="https://music.163.com/outchain/player?type=2&id=' + s.id + '&auto=0&height=66" ' +
-        'loading="lazy" title="' + s.title + ' — 网易云音乐播放器"></iframe>';
+      '<div class="l-btns">' +
+        '<a class="btn-netease" href="https://music.163.com/#/song?id=' + s.netease + '" target="_blank" rel="noopener">网易云音乐</a>' +
+        '<a class="btn-qqmusic" href="https://y.qq.com/n/ryqq/songDetail/' + s.qq + '" target="_blank" rel="noopener">QQ 音乐</a>' +
+      '</div>';
     grid.appendChild(card);
   });
 
