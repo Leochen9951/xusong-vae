@@ -77,9 +77,13 @@ gh repo create xusong-vae --public --source . --push
 
 ```
 xusong-vae/
-├── index.html      # 主页面（含全部样式、MV专区、音乐馆与动画）
+├── index.html      # 主页面 V1（Apple 风格：含 MV 专区、音乐馆与动画）
+├── v2/
+│   └── index.html  # 设计体验版 V2（编辑杂志风：明暗主题、跑马灯、大色块）
 └── README.md       # 本说明
 ```
+
+V2 访问地址：`https://<你的用户名>.github.io/xusong-vae/v2/`（与 V1 共存，互不影响）。
 
 ## ⚠️ 版权声明
 
