@@ -402,49 +402,59 @@
     margin-bottom: 34px;
     line-height: 1.7;
   }
-  .mv-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 26px;
-    max-width: 1080px;
-    margin: 0 auto;
-    padding: 0 24px 64px;
-  }
-  .mv-card {
-    background: var(--bg-white);
-    border-radius: 20px;
-    padding: 16px;
-    box-shadow: 0 12px 38px rgba(0, 0, 0, 0.35);
-    transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
-  }
-  .mv-card:hover { transform: translateY(-5px); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5); }
-  .mv-frame {
+  /* ============ MV 专区（B站官方·单播放器切换） ============ */
+  .mv-player { max-width: 1080px; margin: 0 auto; padding: 0 24px 64px; }
+  .mv-stage {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 12px;
+    border-radius: 20px;
     overflow: hidden;
     background: #000;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5);
   }
-  .mv-frame iframe {
+  .mv-stage iframe {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     border: none;
   }
-  .mv-title {
-    font-size: 1.02rem;
-    font-weight: 700;
-    margin-top: 12px;
-    padding: 0 4px;
+  .mv-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 18px;
   }
-  .mv-src {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    margin-top: 3px;
-    padding: 0 4px;
+  .mv-sel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text-on-dark);
+    border-radius: 14px;
+    padding: 8px 16px 8px 8px;
+    cursor: pointer;
+    transition: background 0.3s var(--ease), transform 0.3s var(--ease), border-color 0.3s var(--ease);
+    font-family: var(--font);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: left;
   }
+  .mv-sel img {
+    width: 60px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
+  .mv-sel:hover { background: rgba(255, 255, 255, 0.16); transform: translateY(-2px); }
+  .mv-sel.active { background: var(--accent); border-color: var(--accent); }
+  .mv-sel-meta { display: flex; flex-direction: column; line-height: 1.4; }
+  .mv-sel-album { font-size: 11px; font-weight: 400; color: rgba(255, 255, 255, 0.65); }
+  .mv-sel.active .mv-sel-album { color: rgba(255, 255, 255, 0.85); }
   .mv-note {
     text-align: center;
     font-size: 12px;
@@ -803,8 +813,13 @@
   </div>
 
   <h3 class="mv-subhead reveal">🎬 官方 MV · 在线播放</h3>
-  <p class="mv-subdesc reveal">由 Bilibili 官方播放器提供 · 全部来自许嵩本人与太合音乐的官方账号 · 同一时间仅一个 MV 播放，点击其他 MV 会自动暂停当前播放</p>
-  <div class="mv-grid" id="mvGrid"></div>
+  <p class="mv-subdesc reveal">由 Bilibili 官方播放器提供 · 全部来自许嵩本人与太合音乐的官方账号 · 点击下方 MV 即自动切换播放，同一时间只播放一支</p>
+  <div class="mv-player reveal">
+    <div class="mv-stage">
+      <iframe id="mvFrame" src="https://player.bilibili.com/player.html?bvid=BV1H64y127hM&page=1&high_quality=1&danmaku=0&autoplay=0" scrolling="no" frameborder="no" allowfullscreen="true" title="许嵩官方MV播放器"></iframe>
+    </div>
+    <div class="mv-selector" id="mvSelector"></div>
+  </div>
 
   <h3 class="mv-subhead reveal">🎵 单曲 · 去官方平台听</h3>
   <p class="mv-subdesc reveal">以下歌曲为 VIP 付费曲目，无法在网页内直接播放，点击按钮跳转平台收听</p>
@@ -909,42 +924,41 @@
 </footer>
 
 <script>
-  /* ================= MV 专区：B站官方账号视频（可嵌入） =================
+  /* ================= MV 专区：B站官方·单播放器切换 =================
      仅收录许嵩本人（mid=647208864）与太合音乐（mid=37791459）官方账号发布的 MV。
-     想增删：编辑 MVS 数组，bvid 为 B 站视频号。 */
+     同一时间只有一个播放器，切换 MV 即替换播放器，旧视频自动停止，杜绝同时播放。
+     想增删：编辑 MVS 数组（bvid 为 B 站视频号，pic 为封面图地址）。 */
   const MVS = [
-    { bvid: 'BV1H64y127hM', title: '乌鸦（官方MV）',      src: '许嵩官方 · 《呼吸之野》2021' },
-    { bvid: 'BV1WU4y1a7sW', title: '老古董（官方MV）',    src: '太合音乐 · 《寻宝游戏》2018' },
-    { bvid: 'BV1sb4y1Q74g', title: '如约而至（官方MV）',  src: '太合音乐 · 《寻宝游戏》2018' },
-    { bvid: 'BV1yy4y187SF', title: '装糊涂（官方MV）',    src: '太合音乐 · 官方单曲 2019' },
-    { bvid: 'BV1Yp4y1h7LU', title: '弹指一挥间（官方MV）', src: '太合音乐 · 《不如吃茶去》2014' },
+    { bvid: 'BV1H64y127hM', title: '乌鸦',       album: '许嵩官方 · 《呼吸之野》2021',      pic: 'http://i0.hdslb.com/bfs/archive/c010c6de579885ea6c0f4a7093d65ce9750aa069.jpg' },
+    { bvid: 'BV1WU4y1a7sW', title: '老古董',     album: '太合音乐 · 《寻宝游戏》2018',      pic: 'http://i2.hdslb.com/bfs/archive/b332ad1cbd8452192a53d9bc37d1e432c2c73c5f.jpg' },
+    { bvid: 'BV1sb4y1Q74g', title: '如约而至',   album: '太合音乐 · 《寻宝游戏》2018',      pic: 'http://i0.hdslb.com/bfs/archive/fab7f15ca09aca08b25a1d240f402e74aa857737.jpg' },
+    { bvid: 'BV1yy4y187SF', title: '装糊涂',     album: '太合音乐 · 官方单曲 2019',         pic: 'http://i0.hdslb.com/bfs/archive/4154ceb706c86c05a7f2e89f8246fdd12c702a06.jpg' },
+    { bvid: 'BV1Yp4y1h7LU', title: '弹指一挥间', album: '太合音乐 · 《不如吃茶去》2014',    pic: 'http://i2.hdslb.com/bfs/archive/cacb97993bb27735d12eb2f03293bcb208df128a.jpg' },
   ];
 
-  const mvGrid = document.getElementById('mvGrid');
-  MVS.forEach((m) => {
-    const card = document.createElement('div');
-    card.className = 'mv-card reveal';
-    card.innerHTML =
-      '<div class="mv-frame">' +
-        '<iframe src="https://player.bilibili.com/player.html?bvid=' + m.bvid + '&page=1&high_quality=1&danmaku=0" ' +
-        'scrolling="no" frameborder="no" allowfullscreen="true" loading="lazy" title="' + m.title + '"></iframe>' +
-      '</div>' +
-      '<div class="mv-title">' + m.title + '</div>' +
-      '<div class="mv-src">' + m.src + '</div>';
-    mvGrid.appendChild(card);
-  });
+  const mvFrame = document.getElementById('mvFrame');
+  const mvSelector = document.getElementById('mvSelector');
+  let mvCur = 0;
 
-  /* MV 互斥播放：同一时间只允许一个播放器出声 */
-  const mvIframes = document.querySelectorAll('.mv-card iframe');
-  function pauseOtherMv(active) {
-    mvIframes.forEach((f) => {
-      if (f !== active) {
-        try { f.contentWindow.postMessage({ action: 'pause' }, '*'); } catch (e) {}
-      }
-    });
+  function mvSrc(bvid) {
+    return 'https://player.bilibili.com/player.html?bvid=' + bvid + '&page=1&high_quality=1&danmaku=0&autoplay=1';
   }
-  mvIframes.forEach((f) => {
-    f.addEventListener('click', () => pauseOtherMv(f));
+
+  MVS.forEach((m, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mv-sel' + (i === 0 ? ' active' : '');
+    b.innerHTML =
+      '<img src="' + m.pic + '" alt="' + m.title + ' 封面">' +
+      '<span class="mv-sel-meta"><span>' + m.title + '</span><span class="mv-sel-album">' + m.album + '</span></span>';
+    b.addEventListener('click', () => {
+      if (i === mvCur) return;
+      mvCur = i;
+      mvFrame.src = mvSrc(m.bvid); // 替换播放器，旧的立即停止
+      document.querySelectorAll('.mv-sel').forEach((x) => x.classList.remove('active'));
+      b.classList.add('active');
+    });
+    mvSelector.appendChild(b);
   });
 
   /* ================= 音乐馆：官方平台直达 =================
