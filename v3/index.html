@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-theme-color="forest">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>许嵩 · 成名之路 — V3 进化版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Righteous&display=swap" rel="stylesheet">
+<style>
+  /* ============ 设计系统（V3：三主题色 墨绿/靛蓝/粉 + 明暗） ============ */
+  :root {
+    --paper: #fafafa;
+    --ink: #09090b;
+    --ink-soft: #18181b;
+    --secondary: #3f3f46;
+    --muted: #64748b;
+    --border: #e4e4e7;
+    --card: #ffffff;
+    --muted-bg: #f1f1f3;
+    --shadow: 0 24px 60px rgba(9, 9, 11, 0.08);
+    --font-disp: "Righteous", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --font-body: "Poppins", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+    --sp-1: 8px; --sp-2: 16px; --sp-3: 24px; --sp-4: 32px; --sp-5: 48px; --sp-6: 64px; --sp-8: 96px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    /* 默认主题：墨绿（Forest） */
+    --accent: #10b981;
+    --accent-2: #34d399;
+    --accent-soft: rgba(16, 185, 129, 0.14);
+    --bg-dark: #08130e;
+    --surface-dark: #0d2017;
+  }
+  /* 主题色：靛蓝 */
+  html[data-theme-color="indigo"] {
+    --accent: #6366f1;
+    --accent-2: #818cf8;
+    --accent-soft: rgba(99, 102, 241, 0.16);
+    --bg-dark: #0a0b1e;
+    --surface-dark: #131430;
+  }
+  /* 主题色：荧光粉（V2 原版） */
+  html[data-theme-color="pink"] {
+    --accent: #ec4899;
+    --accent-2: #f472b6;
+    --accent-soft: rgba(236, 72, 153, 0.14);
+    --bg-dark: #09090b;
+    --surface-dark: #161619;
+  }
+  /* 明暗模式 */
+  html[data-theme="dark"] {
+    --paper: #0a0a0c;
+    --ink: #f4f4f5;
+    --secondary: #d4d4d8;
+    --muted: #a1a1aa;
+    --border: #27272a;
+    --card: #131316;
+    --muted-bg: #17171a;
+    --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  }
+  ::selection { background: var(--accent); color: #fff; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  button { font-family: var(--font-body); cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 var(--sp-3); }
+
+  /* ============ 滚动进度条 ============ */
+  #scrollBar {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 200; pointer-events: none;
+  }
+  #scrollBar::before {
+    content: ""; display: block; height: 100%; width: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transform: scaleX(var(--scale, 0)); transform-origin: left;
+  }
+
+  /* ============ 导航 ============ */
+  nav {
+    position: fixed; inset: 0 0 auto 0; height: 60px; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 var(--sp-3);
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s var(--ease);
+  }
+  .nav-logo {
+    font-family: var(--font-disp); font-size: 19px; letter-spacing: 0.02em;
+    text-decoration: none; display: flex; align-items: center; gap: 10px;
+  }
+  .nav-logo .mark {
+    width: 22px; height: 22px; border-radius: 6px;
+    background: var(--ink); position: relative; transition: background 0.3s var(--ease);
+  }
+  .nav-logo .mark::after {
+    content: ""; position: absolute; inset: 5px; border-radius: 2px;
+    background: var(--accent); transition: background 0.3s var(--ease);
+  }
+  .nav-links { display: flex; gap: var(--sp-3); list-style: none; }
+  .nav-links a {
+    font-size: 13.5px; font-weight: 500; color: var(--secondary);
+    text-decoration: none; padding: 10px 4px; transition: color 0.2s var(--ease);
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 4px; right: 4px; bottom: 4px; height: 2px;
+    background: var(--accent); transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s var(--ease);
+  }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-right { display: flex; align-items: center; gap: var(--sp-2); }
+
+  /* 主题色选择器 */
+  .theme-colors { display: flex; gap: 2px; }
+  .theme-colors button {
+    width: 44px; height: 44px; border: none; background: none; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.25s var(--ease);
+  }
+  .theme-colors button:hover { background: var(--muted-bg); }
+  .theme-colors .dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    box-shadow: inset 0 0 0 2px var(--border);
+    transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  }
+  .theme-colors button[data-c="pink"] .dot { background: #ec4899; }
+  .theme-colors button[data-c="forest"] .dot { background: #10b981; }
+  .theme-colors button[data-c="indigo"] .dot { background: #6366f1; }
+  .theme-colors button.active .dot { box-shadow: inset 0 0 0 2px var(--ink); transform: scale(1.18); }
+
+  #themeToggle {
+    width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--border);
+    background: var(--card); color: var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s var(--ease), background 0.2s var(--ease);
+  }
+  #themeToggle:hover { transform: translateY(-2px); background: var(--muted-bg); }
+  #themeToggle svg { width: 20px; height: 20px; }
+  @media (max-width: 860px) { .nav-links { display: none; } }
+
+  /* ============ Hero ============ */
+  .hero {
+    position: relative; overflow: hidden;
+    min-height: 92vh; display: flex; flex-direction: column; justify-content: center;
+    padding: 130px var(--sp-3) 90px;
+    background:
+      radial-gradient(ellipse 70% 55% at 85% 8%, var(--accent-soft), transparent 60%),
+      var(--paper);
+  }
+  .hero .eyebrow {
+    font-family: var(--font-disp); font-size: 14px; letter-spacing: 0.42em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: var(--sp-3);
+    animation: rise 0.8s var(--ease) 0.05s both;
+  }
+  .hero h1 { line-height: 0.95; font-weight: 700; letter-spacing: -0.04em; }
+  .hero h1 .h-letter {
+    display: inline-block;
+    background: linear-gradient(120deg, var(--ink) 30%, var(--accent) 130%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    font-size: clamp(5rem, 17vw, 13rem);
+    opacity: 0; transform: translateY(48px);
+    animation: letterIn 0.85s var(--ease) forwards;
+  }
+  @keyframes letterIn { to { opacity: 1; transform: translateY(0); } }
+  .hero .sub {
+    margin-top: var(--sp-3); font-size: clamp(1.15rem, 2.4vw, 1.8rem);
+    font-weight: 500; color: var(--secondary); line-height: 1.6;
+    max-width: 720px; animation: rise 0.9s var(--ease) 0.35s both;
+  }
+  .hero .cta-row {
+    margin-top: var(--sp-5); display: flex; gap: var(--sp-2); flex-wrap: wrap;
+    animation: rise 0.9s var(--ease) 0.5s both;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    min-height: 48px; padding: 0 28px; border-radius: 14px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+    transition: transform 0.25s var(--ease), background 0.25s var(--ease), color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-primary:hover { background: var(--accent); color: #fff; transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-soft); }
+  .btn-ghost { border: 1.5px solid var(--ink); color: var(--ink); }
+  .btn-ghost:hover { background: var(--ink); color: var(--paper); transform: translateY(-2px); }
+
+  .blocks { position: absolute; inset: 0; pointer-events: none; z-index: 0; transition: transform 0.4s var(--ease); will-change: transform; }
+  .blocks span { position: absolute; }
+  .blk-a { width: 120px; height: 120px; background: var(--accent); opacity: 0.9; top: 12%; right: 8%; transform: rotate(12deg); animation: floaty 7s ease-in-out infinite; }
+  .blk-b { width: 64px; height: 64px; border: 6px solid var(--ink); top: 30%; right: 22%; transform: rotate(-8deg); animation: floaty 9s ease-in-out 0.8s infinite; }
+  .blk-c { width: 220px; height: 18px; background: var(--ink); bottom: 18%; right: 6%; animation: floaty 8s ease-in-out 0.4s infinite; }
+  .blk-d { width: 44px; height: 44px; background: var(--accent); opacity: 0.5; bottom: 12%; right: 30%; border-radius: 50%; animation: floaty 6s ease-in-out 1.2s infinite; }
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); }
+    50% { transform: translateY(-12px) rotate(var(--r, 0deg)); }
+  }
+  .blk-a { --r: 12deg; } .blk-b { --r: -8deg; } .blk-c { --r: 0deg; } .blk-d { --r: 0deg; }
+  .hero .container { position: relative; z-index: 1; }
+
+  .ticker {
+    position: absolute; left: 0; right: 0; bottom: 0; overflow: hidden;
+    border-top: 1px solid var(--border); background: var(--bg-dark); color: #f4f4f5;
+    padding: 14px 0; white-space: nowrap;
+  }
+  .ticker .track { display: inline-block; animation: ticker 28s linear infinite; font-size: 14px; letter-spacing: 0.1em; }
+  .ticker:hover .track { animation-play-state: paused; }
+  .ticker .track span { margin: 0 26px; }
+  .ticker .track i { color: var(--accent); font-style: normal; }
+  @keyframes ticker { to { transform: translateX(-50%); } }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(26px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ 章节通用 ============ */
+  section { position: relative; }
+  .section-dark { background: var(--bg-dark); color: #f4f4f5; }
+  .section-dark .section-sub { color: rgba(244, 244, 245, 0.66); }
+  .section-dark .btn-ghost { border-color: #f4f4f5; color: #f4f4f5; }
+  .section-dark .btn-ghost:hover { background: #f4f4f5; color: #09090b; }
+
+  .section-head { padding: var(--sp-8) 0 var(--sp-5); }
+  .section-head .kicker {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: var(--sp-2);
+  }
+  .section-head .kicker svg { width: 18px; height: 18px; }
+  .section-head h2 {
+    font-size: clamp(2.2rem, 5.4vw, 4.2rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.08;
+  }
+  .section-sub { margin-top: var(--sp-2); font-size: 1.05rem; line-height: 1.75; color: var(--muted); max-width: 680px; }
+
+  .chapter { padding: var(--sp-6) 0 var(--sp-8); }
+  .chapter-grid {
+    display: grid; grid-template-columns: 1.05fr 0.95fr; gap: var(--sp-6); align-items: center;
+  }
+  @media (max-width: 900px) { .chapter-grid { grid-template-columns: 1fr; gap: var(--sp-4); } }
+
+  .ch-num {
+    font-family: var(--font-disp); font-size: clamp(4rem, 8vw, 6.5rem);
+    line-height: 1; color: var(--accent); display: block; margin-bottom: var(--sp-2);
+    transition: color 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .ch-text:hover .ch-num { transform: translateX(6px); color: var(--accent-2); }
+  .ch-text h3 { font-size: clamp(1.7rem, 3.4vw, 2.6rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: var(--sp-2); }
+  .ch-text p { font-size: 1.04rem; line-height: 1.8; color: var(--muted); }
+  .ch-text p + p { margin-top: var(--sp-2); }
+  .ch-tag {
+    display: inline-block; margin-top: var(--sp-3); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.1em; color: var(--ink); background: var(--accent-soft);
+    border: 1px solid var(--accent); padding: 8px 18px; border-radius: 999px;
+    transition: background 0.3s var(--ease), color 0.3s var(--ease);
+  }
+  .ch-tag:hover { background: var(--accent); color: #fff; }
+  .section-dark .ch-tag { color: #f4f4f5; }
+
+  .ch-visual { position: relative; }
+  .block-card {
+    position: relative; min-height: 380px; border-radius: 24px; overflow: hidden;
+    background: var(--surface-dark); color: #f4f4f5;
+    display: flex; flex-direction: column; justify-content: flex-end; padding: var(--sp-4);
+    box-shadow: var(--shadow);
+    transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  }
+  .block-card:hover { transform: translateY(-6px); box-shadow: 0 32px 70px rgba(0, 0, 0, 0.25); }
+  .block-card .bc-title { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.01em; }
+  .block-card .bc-sub { margin-top: 6px; font-size: 0.92rem; color: rgba(244, 244, 245, 0.7); }
+  .block-card .bc-geo { position: absolute; pointer-events: none; transition: transform 0.6s var(--ease); }
+  .bc-g1 { width: 220px; height: 220px; background: var(--accent); opacity: 0.92; top: -60px; right: -60px; border-radius: 50%; }
+  .bc-g2 { width: 120px; height: 34px; background: rgba(244, 244, 245, 0.9); top: 120px; right: 40px; transform: rotate(-6deg); }
+  .bc-g3 { width: 60px; height: 60px; border: 5px solid var(--accent); bottom: 100px; left: -18px; }
+  .block-card:hover .bc-g1 { transform: scale(1.14) translate(-12px, 12px); }
+  .block-card:hover .bc-g2 { transform: rotate(8deg) translateX(10px); }
+  .block-card:hover .bc-g3 { transform: translateX(14px) rotate(20deg); }
+  .bc-2 { background: var(--accent); color: #fff; }
+  .bc-2 .bc-geo { background: var(--bg-dark); }
+  .bc-2 .bc-g2 { background: rgba(255, 255, 255, 0.85); }
+  .bc-3 { background: linear-gradient(140deg, var(--ink-soft), var(--bg-dark)); }
+
+  /* ============ 专辑网格 ============ */
+  .album-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--sp-3); padding-bottom: var(--sp-8);
+  }
+  .album {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: var(--sp-2); transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+  .album:hover { transform: translateY(-6px) rotate(-0.6deg); box-shadow: var(--shadow); }
+  .album .cover {
+    aspect-ratio: 1; border-radius: 14px; margin-bottom: var(--sp-2);
+    display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+  }
+  .album .cover span { font-size: 1.9rem; font-weight: 700; letter-spacing: 0.08em; color: #fff; position: relative; z-index: 1; }
+  .album .cover::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 40%, var(--accent));
+    opacity: 0.55; transition: opacity 0.3s var(--ease);
+  }
+  .album:hover .cover::after { opacity: 0.75; }
+  .album h4 { font-size: 1.02rem; font-weight: 600; }
+  .album .meta { font-size: 0.8rem; color: var(--muted); margin-top: 3px; }
+  .album .song { font-size: 0.82rem; color: var(--accent); font-weight: 600; margin-top: 8px; }
+  .c1 { background: linear-gradient(135deg, #18181b, #3f3f46); }
+  .c2 { background: linear-gradient(135deg, #ec4899, #f472b6); }
+  .c3 { background: linear-gradient(135deg, #134e4a, #0f766e); }
+  .c4 { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+  .c5 { background: linear-gradient(135deg, #b45309, #f59e0b); }
+  .c6 { background: linear-gradient(135deg, #be123c, #fb7185); }
+  .c7 { background: linear-gradient(135deg, #1e3a8a, #60a5fa); }
+  .c8 { background: linear-gradient(135deg, #065f46, #34d399); }
+
+  /* ============ MV 专区 ============ */
+  .mv-player { max-width: 1040px; margin: 0 auto; padding-bottom: var(--sp-6); }
+  .mv-stage {
+    position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 20px;
+    overflow: hidden; background: #000; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  }
+  .mv-stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: none; }
+  .mv-selector { display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: center; margin-top: var(--sp-3); }
+  .mv-sel {
+    display: flex; align-items: center; gap: 12px; min-height: 44px;
+    background: var(--card); border: 1px solid var(--border); color: var(--ink);
+    border-radius: 14px; padding: 6px 16px 6px 6px; cursor: pointer;
+    transition: border-color 0.25s var(--ease), background 0.25s var(--ease), transform 0.25s var(--ease);
+    font-size: 13.5px; font-weight: 600;
+  }
+  .mv-sel img { width: 60px; height: 38px; object-fit: cover; border-radius: 9px; }
+  .mv-sel:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .mv-sel.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .mv-sel-meta { display: flex; flex-direction: column; line-height: 1.4; text-align: left; }
+  .mv-sel-album { font-size: 11px; font-weight: 400; color: var(--muted); }
+  .mv-sel.active .mv-sel-album { color: rgba(255, 255, 255, 0.82); }
+
+  .link-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--sp-3); padding-bottom: var(--sp-8);
+  }
+  .l-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: var(--sp-3); display: flex; flex-direction: column; gap: var(--sp-2);
+    transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  }
+  .l-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+  .l-title { font-size: 1.1rem; font-weight: 700; }
+  .l-album { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+  .l-btns { display: flex; gap: 12px; margin-top: 4px; }
+  .l-btns a {
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 44px; font-size: 13.5px; font-weight: 600; text-decoration: none;
+    border-radius: 12px; color: #fff; transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .l-btns a:hover { opacity: 0.85; transform: translateY(-1px); }
+  .btn-netease { background: #c20c0c; }
+  .btn-qqmusic { background: #31c27c; }
+  .m-note { text-align: center; font-size: 12px; color: var(--muted); padding-bottom: var(--sp-6); }
+
+  /* ============ 时间线 ============ */
+  .timeline { max-width: 760px; margin: 0 auto; padding: 0 0 var(--sp-8); position: relative; }
+  .timeline::before {
+    content: ""; position: absolute; left: 10px; top: 8px; bottom: 8px; width: 3px;
+    background: var(--ink); border-radius: 2px;
+  }
+  .tl-item { position: relative; padding: 0 0 var(--sp-5) 56px; }
+  .tl-item::before {
+    content: ""; position: absolute; left: 0; top: 4px; width: 22px; height: 22px;
+    border-radius: 7px; background: var(--accent); transform: rotate(45deg);
+    box-shadow: 0 0 0 6px var(--paper), 0 0 0 7px var(--accent);
+    animation: dotPulse 2.6s var(--ease) infinite;
+  }
+  @keyframes dotPulse {
+    0%, 100% { transform: rotate(45deg) scale(1); }
+    50% { transform: rotate(45deg) scale(1.22); }
+  }
+  .tl-item .year { font-family: var(--font-disp); font-size: 14px; letter-spacing: 0.16em; color: var(--accent); }
+  .tl-item h4 { font-size: 1.5rem; font-weight: 700; margin: 8px 0 10px; letter-spacing: -0.01em; }
+  .tl-item p { font-size: 0.98rem; line-height: 1.75; color: var(--muted); }
+
+  /* ============ 歌词 ============ */
+  .quotes { text-align: center; padding: var(--sp-8) 0; }
+  .quotes .q-head { font-size: clamp(2rem, 4.5vw, 3.4rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: var(--sp-6); }
+  .quote-slide { display: none; }
+  .quote-slide.active { display: block; animation: rise 0.7s var(--ease) both; }
+  .quote-slide blockquote {
+    font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 600; line-height: 1.55;
+    max-width: 860px; margin: 0 auto; letter-spacing: 0.01em;
+  }
+  .quote-slide blockquote .hl { color: var(--accent); }
+  .quote-slide .src { margin-top: var(--sp-3); font-size: 0.95rem; color: var(--muted); letter-spacing: 0.1em; }
+  .quote-dots { display: flex; justify-content: center; gap: 12px; margin-top: var(--sp-5); }
+  .quote-dots button {
+    width: 44px; height: 44px; border: none; background: none; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .quote-dots button::before {
+    content: ""; width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(244, 244, 245, 0.3); transition: background 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .quote-dots button.active::before { background: var(--accent); transform: scale(1.5); }
+
+  /* ============ 结语 / Footer ============ */
+  .outro { text-align: center; padding: var(--sp-8) 0; }
+  .outro h2 { font-size: clamp(2.6rem, 6vw, 4.6rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; max-width: 900px; margin: 0 auto; }
+  .outro h2 .grad {
+    background: linear-gradient(110deg, var(--accent), var(--accent-2), var(--accent));
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    background-size: 200% 100%; animation: shimmer 6s ease-in-out infinite;
+  }
+  @keyframes shimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+  .outro p { margin: var(--sp-3) auto 0; font-size: 1.1rem; line-height: 1.75; color: var(--muted); max-width: 620px; }
+  footer {
+    border-top: 1px solid var(--border); padding: var(--sp-5) var(--sp-3) var(--sp-6);
+    text-align: center;
+  }
+  footer p { font-size: 12px; color: var(--muted); line-height: 1.9; }
+
+  /* ============ 返回顶部 ============ */
+  #toTop {
+    position: fixed; right: 20px; bottom: 20px; z-index: 150;
+    width: 48px; height: 48px; border-radius: 50%; border: none;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px var(--accent-soft);
+    opacity: 0; transform: translateY(16px) scale(0.9); pointer-events: none;
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), background 0.3s var(--ease);
+  }
+  #toTop.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  #toTop:hover { background: var(--accent-2); }
+  #toTop:active { transform: scale(0.94); }
+  #toTop svg { width: 22px; height: 22px; }
+
+  /* ============ 滚动显现 ============ */
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal.d1 { transition-delay: 0.1s; }
+  .reveal.d2 { transition-delay: 0.2s; }
+  .reveal-left { opacity: 0; transform: translateX(-36px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+  .reveal-right { opacity: 0; transform: translateX(36px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+  .reveal-left.visible, .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+  /* skill §1 reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal, .reveal-left, .reveal-right { opacity: 1; transform: none; transition: none; }
+    .ticker .track, .blk-a, .blk-b, .blk-c, .blk-d, .tl-item::before { animation: none !important; }
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  @media (max-width: 560px) {
+    .link-grid { grid-template-columns: 1fr; }
+    .l-btns a { font-size: 13px; }
+    #toTop { right: 14px; bottom: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="scrollBar" aria-hidden="true"></div>
+
+<!-- ================= 导航 ================= -->
+<nav>
+  <a class="nav-logo" href="#top"><span class="mark"></span><span>许嵩 VAE</span></a>
+  <ul class="nav-links">
+    <li><a href="#ch1">起点</a></li>
+    <li><a href="#ch2">破圈</a></li>
+    <li><a href="#albums">作品</a></li>
+    <li><a href="#ch3">主流</a></li>
+    <li><a href="#ch5">回响</a></li>
+    <li><a href="#music">影音</a></li>
+    <li><a href="#timeline">年表</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="theme-colors" role="group" aria-label="主题色选择">
+      <button data-c="forest" aria-label="墨绿主题" title="墨绿"><span class="dot"></span></button>
+      <button data-c="indigo" aria-label="靛蓝主题" title="靛蓝"><span class="dot"></span></button>
+      <button data-c="pink" aria-label="荧光粉主题" title="荧光粉"><span class="dot"></span></button>
+    </div>
+    <button id="themeToggle" aria-label="切换明暗主题" title="切换明暗主题">
+      <svg id="iconMoon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg id="iconSun" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <div class="blocks" id="heroBlocks" aria-hidden="true"><span class="blk-a"></span><span class="blk-b"></span><span class="blk-c"></span><span class="blk-d"></span></div>
+  <div class="container" id="heroContent">
+    <p class="eyebrow">Vae · 1986 — Present</p>
+    <h1 id="heroTitle">许嵩</h1>
+    <p class="sub">从网络上传歌的学生，到时代唱作人 —— 一条不走寻常路的成名之路。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#ch1">
+        开始阅读
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="#music">听歌看 MV</a>
+    </div>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="track" id="tickerTrack">
+      <span>素颜 <i>✦</i></span><span>有何不可 <i>✦</i></span><span>灰色头像 <i>✦</i></span><span>千百度 <i>✦</i></span><span>断桥残雪 <i>✦</i></span><span>雅俗共赏 <i>✦</i></span><span>乌鸦 <i>✦</i></span><span>老古董 <i>✦</i></span><span>如约而至 <i>✦</i></span><span>弹指一挥间 <i>✦</i></span><span>装糊涂 <i>✦</i></span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= 第一章：起点 ================= -->
+<section class="section-light" id="ch1">
+  <div class="container chapter">
+    <div class="chapter-grid">
+      <div class="ch-text reveal-left">
+        <span class="ch-num">01</span>
+        <h3>起点：一个医学生的音乐梦</h3>
+        <p>1986 年生于安徽合肥的许嵩，就读于安徽医科大学。在人人写博客、音乐靠光盘传播的年代，他给自己取名「Vae」，把自制的歌曲一首首传到网上。</p>
+        <p>没有唱片公司，没有宣发预算，只有一台电脑、一副耳机，和一颗想要表达的心。谁也没想到，这些简陋的 Demo，会成为一代人青春的开端。</p>
+        <span class="ch-tag">独立词 · 曲 · 编 · 唱</span>
+      </div>
+      <div class="ch-visual reveal-right d1">
+        <div class="block-card">
+          <span class="bc-geo bc-g1"></span><span class="bc-geo bc-g2"></span><span class="bc-geo bc-g3"></span>
+          <div class="bc-title">网络原住民</div>
+          <div class="bc-sub">在互联网的角落，用音乐写下第一行代码</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第二章：破圈（深色） ================= -->
+<section class="section-dark" id="ch2">
+  <div class="container chapter">
+    <div class="chapter-grid">
+      <div class="ch-visual reveal-left">
+        <div class="block-card bc-2">
+          <span class="bc-geo bc-g1"></span><span class="bc-geo bc-g2"></span><span class="bc-geo bc-g3"></span>
+          <div class="bc-title">词曲编唱一人包办</div>
+          <div class="bc-sub">《自定义》—— 华语乐坛罕见的全创作专辑</div>
+        </div>
+      </div>
+      <div class="ch-text reveal-right d1">
+        <span class="ch-num">02</span>
+        <h3>破圈：网络时代的「三巨头」</h3>
+        <p>2009 年，许嵩首张个人专辑《自定义》未经任何公司包装直接发布到网上——词、曲、编、混全部一人完成。2010 年《寻雾启示》继续发酵，《灰色头像》《素颜》成为校园里最流行的旋律。</p>
+        <p>没有打榜、没有综艺，他与汪苏泷、徐良并称网络时代「三巨头」，用作品本身完成了最硬核的破圈。</p>
+        <span class="ch-tag">《自定义》2009 · 《寻雾启示》2010</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 作品集 ================= -->
+<section class="section-light" id="albums">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="kicker">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+        Selected Albums
+      </span>
+      <h2>那些年，单曲循环过的专辑</h2>
+      <p class="section-sub">从青涩到成熟，八张专辑串起一条完整的成长轨迹。</p>
+    </div>
+    <div class="album-grid" id="albumGrid">
+      <div class="album reveal"><div class="cover c1"><span>自定义</span></div><h4>《自定义》</h4><div class="meta">2009 · 首张全创作专辑</div><div class="song">有何不可 · 城府</div></div>
+      <div class="album reveal"><div class="cover c2"><span>寻雾启示</span></div><h4>《寻雾启示》</h4><div class="meta">2010 · 网络爆红之年</div><div class="song">灰色头像 · 素颜</div></div>
+      <div class="album reveal"><div class="cover c3"><span>苏格拉没有底</span></div><h4>《苏格拉没有底》</h4><div class="meta">2011 · 签约海蝶后首作</div><div class="song">想象之中 · 千百度</div></div>
+      <div class="album reveal"><div class="cover c4"><span>梦游计</span></div><h4>《梦游计》</h4><div class="meta">2012 · 概念感之作</div><div class="song">胡萝卜须 · 幻听</div></div>
+      <div class="album reveal"><div class="cover c5"><span>不如吃茶去</span></div><h4>《不如吃茶去》</h4><div class="meta">2014 · 山水之间</div><div class="song">山水之间 · 惊鸿一面</div></div>
+      <div class="album reveal"><div class="cover c6"><span>青年晚报</span></div><h4>《青年晚报》</h4><div class="meta">2016 · 更成熟的表达</div><div class="song">雅俗共赏 · 最佳歌手</div></div>
+      <div class="album reveal"><div class="cover c7"><span>寻宝游戏</span></div><h4>《寻宝游戏》</h4><div class="meta">2018 · 巡演再出发</div><div class="song">老古董 · 明智之举</div></div>
+      <div class="album reveal"><div class="cover c8"><span>呼吸之野</span></div><h4>《呼吸之野》</h4><div class="meta">2021 · 概念完整之作</div><div class="song">乌鸦 · 超市里的陷阱</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第三章：主流 ================= -->
+<section class="section-light" id="ch3">
+  <div class="container chapter">
+    <div class="chapter-grid">
+      <div class="ch-text reveal-left">
+        <span class="ch-num">03</span>
+        <h3>主流：被看见，仍做自己</h3>
+        <p>2011 年，许嵩签约海蝶音乐，正式从「网络歌手」走向职业音乐人。首张正式专辑《苏格拉没有底》延续了他的思辨与冷幽默。</p>
+        <p>当质疑声说「网络歌手难登大雅之堂」时，他用一张张原创专辑回应——不炒作、不上综艺，把话语权交还给作品本身。</p>
+        <span class="ch-tag">从「网络歌手」到「职业音乐人」</span>
+      </div>
+      <div class="ch-visual reveal-right d1">
+        <div class="block-card bc-3">
+          <span class="bc-geo bc-g1"></span><span class="bc-geo bc-g2"></span><span class="bc-geo bc-g3"></span>
+          <div class="bc-title">被主流看见</div>
+          <div class="bc-sub">不迎合，是他的姿态；作品，是他的名片</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第四章：沉淀（深色） ================= -->
+<section class="section-dark" id="ch4">
+  <div class="container chapter">
+    <div class="chapter-grid">
+      <div class="ch-visual reveal-left">
+        <div class="block-card">
+          <span class="bc-geo bc-g1"></span><span class="bc-geo bc-g2"></span><span class="bc-geo bc-g3"></span>
+          <div class="bc-title">不追热点，自成经典</div>
+          <div class="bc-sub">《雅俗共赏》横扫各大榜单与颁奖礼</div>
+        </div>
+      </div>
+      <div class="ch-text reveal-right d1">
+        <span class="ch-num">04</span>
+        <h3>沉淀：把热闹还给喧嚣</h3>
+        <p>这个阶段，许嵩开始频繁出现在央视与各大音乐颁奖礼上——从「网络歌手」到被主流奖项与媒体反复认可，他完成了身份的第三次跃迁。</p>
+        <p>《不如吃茶去》的禅意、《青年晚报》的社会观察、《寻宝游戏》的复古摩登，每一步都踩在自己的节奏上。粉丝们说：「他不追热点，因为他自己就是热点。」</p>
+        <span class="ch-tag">主流奖项 × 央视舞台</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第五章：回响 ================= -->
+<section class="section-light" id="ch5">
+  <div class="container chapter">
+    <div class="chapter-grid">
+      <div class="ch-text reveal-left">
+        <span class="ch-num">05</span>
+        <h3>回响：万人合唱的青春</h3>
+        <p>2019「寻宝游戏」巡回演唱会、2023「呼吸之野」巡回演唱会，场场爆满。当全场万人齐唱《素颜》《有何不可》时，那不是追星，是集体回忆自己的青春。</p>
+        <p>从大学宿舍里的耳机，到体育场的聚光灯——这条路他走了十几年。而那个叫「Vae」的年轻人，始终没变。</p>
+        <span class="ch-tag">巡演场场售罄 · 华语乐坛独树一帜</span>
+      </div>
+      <div class="ch-visual reveal-right d1">
+        <div class="block-card bc-2">
+          <span class="bc-geo bc-g1"></span><span class="bc-geo bc-g2"></span><span class="bc-geo bc-g3"></span>
+          <div class="bc-title">呼吸之野 · 现场</div>
+          <div class="bc-sub">从耳机到体育场，一首歌唱了十几年</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 音乐馆（深色） ================= -->
+<section class="section-dark" id="music">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="kicker">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M22 9v6"/></svg>
+        Official · Bilibili / 网易云 / QQ 音乐
+      </span>
+      <h2>音乐馆 · 官方影音</h2>
+      <p class="section-sub">许嵩本人与所属厂牌（太合音乐）发布的官方 MV 可在线直接播放；其余单曲为付费 VIP 曲目，提供官方平台直达链接。</p>
+    </div>
+
+    <h3 style="display:flex;align-items:center;gap:10px;font-size:1.35rem;font-weight:700;margin-bottom:6px;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M22 9v6"/></svg>
+      官方 MV · 在线播放
+    </h3>
+    <div class="mv-player reveal">
+      <div class="mv-stage">
+        <iframe id="mvFrame" src="https://player.bilibili.com/player.html?bvid=BV1H64y127hM&page=1&high_quality=1&danmaku=0&autoplay=0" scrolling="no" frameborder="no" allowfullscreen="true" title="许嵩官方MV播放器"></iframe>
+      </div>
+      <div class="mv-selector" id="mvSelector"></div>
+    </div>
+
+    <h3 style="display:flex;align-items:center;gap:10px;font-size:1.35rem;font-weight:700;margin:var(--sp-4) 0 6px;">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      单曲 · 去官方平台听
+    </h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:var(--sp-3);">以下歌曲为 VIP 付费曲目，无法在网页内直接播放</p>
+    <div class="link-grid" id="musicGrid"></div>
+    <p class="m-note">本站不存储、不传播任何音频或视频文件，全部内容由 Bilibili / 网易云音乐 / QQ 音乐官方提供，版权归原权利人所有。</p>
+  </div>
+</section>
+
+<!-- ================= 时间线 ================= -->
+<section class="section-light" id="timeline">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="kicker">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Timeline
+      </span>
+      <h2>成名之路 · 大事年表</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item reveal"><span class="year">1986</span><h4>生于合肥</h4><p>5 月 14 日出生于安徽省合肥市，学生时代便展现出音乐天赋。</p></div>
+      <div class="tl-item reveal"><span class="year">2006</span><h4>「Vae」上线</h4><p>就读安徽医科大学期间，开始在网上发布原创歌曲，积累第一批听众。</p></div>
+      <div class="tl-item reveal"><span class="year">2009</span><h4>《自定义》问世</h4><p>首张全创作专辑发布，词曲编唱一人包办，网络歌手时代开启。</p></div>
+      <div class="tl-item reveal"><span class="year">2011</span><h4>签约海蝶音乐</h4><p>发布《苏格拉没有底》，正式迈入主流乐坛。</p></div>
+      <div class="tl-item reveal"><span class="year">2014 — 2018</span><h4>三张专辑，三次转身</h4><p>《不如吃茶去》《青年晚报》《寻宝游戏》，风格日趋成熟，奖项与认可纷至沓来。</p></div>
+      <div class="tl-item reveal"><span class="year">2021 — 至今</span><h4>《呼吸之野》与万人巡演</h4><p>概念专辑收获极高评价，「呼吸之野」巡回演唱会一票难求。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 歌词（深色） ================= -->
+<section class="section-dark quotes" id="quotes">
+  <div class="container">
+    <h2 class="q-head reveal">那些刻进青春的歌词</h2>
+    <div class="quote-track reveal">
+      <div class="quote-slide active"><blockquote>「我寻你<em class="hl">千百度</em>，日出到迟暮，一瓢江湖我沉浮。」</blockquote><p class="src">——《千百度》· 2011</p></div>
+      <div class="quote-slide"><blockquote>「断桥是否下过雪，我望着湖面，水中寒月如雪，指尖轻点融解。」</blockquote><p class="src">——《断桥残雪》· 2007</p></div>
+      <div class="quote-slide"><blockquote>「俗的无畏，雅的轻狂，还不都是一副臭皮囊。」</blockquote><p class="src">——《雅俗共赏》· 2016</p></div>
+      <div class="quote-slide"><blockquote>「为你唱这首歌，没有什么风格，它仅仅代表着，我想给你快乐。」</blockquote><p class="src">——《有何不可》· 2009</p></div>
+      <div class="quote-slide"><blockquote>「如果再看你一眼，是否还会有感觉。」</blockquote><p class="src">——《素颜》· 2010</p></div>
+      <div class="quote-slide"><blockquote>「飞上枝头的都风趣，占了巢的都在窃喜，但想到你，就不会勉强合群。」</blockquote><p class="src">——《乌鸦》· 2021</p></div>
+    </div>
+    <div class="quote-dots">
+      <button class="active" data-i="0" aria-label="歌词 1"></button>
+      <button data-i="1" aria-label="歌词 2"></button>
+      <button data-i="2" aria-label="歌词 3"></button>
+      <button data-i="3" aria-label="歌词 4"></button>
+      <button data-i="4" aria-label="歌词 5"></button>
+      <button data-i="5" aria-label="歌词 6"></button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 结语 ================= -->
+<section class="section-light outro">
+  <div class="container">
+    <h2 class="reveal">当旋律响起，<br><span class="grad">青春从未走远。</span></h2>
+    <p class="reveal d1">许嵩的成名之路，没有捷径，只有一首一首写下去的歌。他用十几年时间证明：在流量时代，真正的才华依然会被时间温柔以待。</p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>许嵩 · Vae 成名之路 — V3 进化版（三主题色 + 动效升级）</p>
+    <p>本页面为设计演示，文字内容仅供学习参考 · 音乐与 MV 由 Bilibili / 网易云音乐 / QQ 音乐官方提供，版权归原权利人所有</p>
+  </div>
+</footer>
+
+<button id="toTop" aria-label="回到顶部" title="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
+<script>
+  /* ============ 主题色（墨绿 / 靛蓝 / 粉） ============ */
+  const html = document.documentElement;
+  const color = localStorage.getItem('xsv3-color') || 'forest';
+  html.dataset.themeColor = color;
+  document.querySelectorAll('.theme-colors button').forEach((b) => {
+    b.classList.toggle('active', b.dataset.c === color);
+    b.addEventListener('click', () => {
+      html.dataset.themeColor = b.dataset.c;
+      localStorage.setItem('xsv3-color', b.dataset.c);
+      document.querySelectorAll('.theme-colors button').forEach((x) => x.classList.remove('active'));
+      b.classList.add('active');
+    });
+  });
+
+  /* ============ 明暗主题 ============ */
+  const saved = localStorage.getItem('xsv3-theme');
+  const theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  html.dataset.theme = theme;
+  syncIcons();
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('xsv3-theme', html.dataset.theme);
+    syncIcons();
+  });
+  function syncIcons() {
+    const dark = html.dataset.theme === 'dark';
+    document.getElementById('iconMoon').style.display = dark ? 'none' : '';
+    document.getElementById('iconSun').style.display = dark ? '' : 'none';
+  }
+
+  /* ============ Hero 标题逐字入场 ============ */
+  const title = document.getElementById('heroTitle');
+  const chars = [...title.textContent];
+  title.innerHTML = chars.map((c, i) =>
+    '<span class="h-letter" style="animation-delay:' + (0.1 + i * 0.18) + 's">' + c + '</span>'
+  ).join('');
+
+  /* ============ 跑马灯去重 ============ */
+  const track = document.getElementById('tickerTrack');
+  track.innerHTML += track.innerHTML;
+
+  /* ============ 滚动进度条 + 返回顶部 + Hero 视差淡出 ============ */
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const scrollBar = document.getElementById('scrollBar');
+  const toTop = document.getElementById('toTop');
+  const heroContent = document.getElementById('heroContent');
+  function onScroll() {
+    const y = window.scrollY;
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    scrollBar.style.setProperty('--scale', max > 0 ? y / max : 0);
+    toTop.classList.toggle('show', y > 600);
+    if (!reduceMotion && y < window.innerHeight) {
+      heroContent.style.opacity = Math.max(0, 1 - (y / window.innerHeight) * 1.1);
+      heroContent.style.transform = 'translateY(' + (y * 0.12) + 'px)';
+    }
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+
+  /* ============ Hero 几何块鼠标视差 ============ */
+  const hero = document.getElementById('top');
+  const blocks = document.getElementById('heroBlocks');
+  if (!reduceMotion && matchMedia('(pointer: fine)').matches) {
+    hero.addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      blocks.style.transform = 'translate(' + (x * 26) + 'px,' + (y * 18) + 'px)';
+    });
+    hero.addEventListener('mouseleave', () => { blocks.style.transform = 'translate(0,0)'; });
+  }
+
+  /* ============ 专辑卡片交错入场 ============ */
+  document.querySelectorAll('#albumGrid .album').forEach((el, i) => {
+    el.style.transitionDelay = ((i % 4) * 60) + 'ms';
+  });
+
+  /* ============ MV 专区：单播放器切换（B站官方账号） ============ */
+  const MVS = [
+    { bvid: 'BV1H64y127hM', title: '乌鸦',       album: '许嵩官方 · 《呼吸之野》2021',      pic: 'https://i0.hdslb.com/bfs/archive/c010c6de579885ea6c0f4a7093d65ce9750aa069.jpg' },
+    { bvid: 'BV1WU4y1a7sW', title: '老古董',     album: '太合音乐 · 《寻宝游戏》2018',      pic: 'https://i2.hdslb.com/bfs/archive/b332ad1cbd8452192a53d9bc37d1e432c2c73c5f.jpg' },
+    { bvid: 'BV1sb4y1Q74g', title: '如约而至',   album: '太合音乐 · 《寻宝游戏》2018',      pic: 'https://i0.hdslb.com/bfs/archive/fab7f15ca09aca08b25a1d240f402e74aa857737.jpg' },
+    { bvid: 'BV1yy4y187SF', title: '装糊涂',     album: '太合音乐 · 官方单曲 2019',         pic: 'https://i0.hdslb.com/bfs/archive/4154ceb706c86c05a7f2e89f8246fdd12c702a06.jpg' },
+    { bvid: 'BV1Yp4y1h7LU', title: '弹指一挥间', album: '太合音乐 · 《不如吃茶去》2014',    pic: 'https://i2.hdslb.com/bfs/archive/cacb97993bb27735d12eb2f03293bcb208df128a.jpg' },
+  ];
+  const mvFrame = document.getElementById('mvFrame');
+  const mvSelector = document.getElementById('mvSelector');
+  let mvCur = 0;
+  function mvSrc(bvid) { return 'https://player.bilibili.com/player.html?bvid=' + bvid + '&page=1&high_quality=1&danmaku=0&autoplay=1'; }
+  MVS.forEach((m, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mv-sel' + (i === 0 ? ' active' : '');
+    b.innerHTML =
+      '<img src="' + m.pic + '" alt="' + m.title + ' 封面" referrerpolicy="no-referrer" width="60" height="38">' +
+      '<span class="mv-sel-meta"><span>' + m.title + '</span><span class="mv-sel-album">' + m.album + '</span></span>';
+    b.addEventListener('click', () => {
+      if (i === mvCur) return;
+      mvCur = i;
+      mvFrame.src = mvSrc(m.bvid);
+      document.querySelectorAll('.mv-sel').forEach((x) => x.classList.remove('active'));
+      b.classList.add('active');
+    });
+    mvSelector.appendChild(b);
+  });
+
+  /* ============ 音乐馆：官方平台直达 ============ */
+  const SONGS = [
+    { title: '素颜',     album: '寻雾启示',     netease: 167827,    qq: '004Gq0xE1YC8xp' },
+    { title: '有何不可', album: '自定义',       netease: 167876,    qq: '002mZevo3wHvsc' },
+    { title: '灰色头像', album: '寻雾启示',     netease: 167844,    qq: '003cLs112yMAcW' },
+    { title: '千百度',   album: '苏格拉没有底', netease: 167732,    qq: '000rys863Az3Us' },
+    { title: '断桥残雪', album: '断桥残雪',     netease: 167937,    qq: '004ENQPZ0dHaqy' },
+    { title: '雅俗共赏', album: '青年晚报',     netease: 411214279, qq: '001FGQba3i10mw' },
+    { title: '乌鸦',     album: '呼吸之野',     netease: 1842784921, qq: '001zINAl3eQ65I' },
+  ];
+  const grid = document.getElementById('musicGrid');
+  SONGS.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'l-card reveal';
+    card.style.transitionDelay = ((i % 3) * 60) + 'ms';
+    card.innerHTML =
+      '<div><div class="l-title">' + s.title + '</div><div class="l-album">《' + s.album + '》· 许嵩</div></div>' +
+      '<div class="l-btns">' +
+        '<a class="btn-netease" href="https://music.163.com/#/song?id=' + s.netease + '" target="_blank" rel="noopener">网易云音乐</a>' +
+        '<a class="btn-qqmusic" href="https://y.qq.com/n/ryqq/songDetail/' + s.qq + '" target="_blank" rel="noopener">QQ 音乐</a>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+
+  /* ============ 滚动显现 ============ */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach((el) => io.observe(el));
+
+  /* ============ 歌词轮播 ============ */
+  const slides = document.querySelectorAll('.quote-slide');
+  const dots = document.querySelectorAll('.quote-dots button');
+  let current = 0, timer;
+  function show(i) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+  function autoPlay() { timer = setInterval(() => show((current + 1) % slides.length), 4200); }
+  dots.forEach((d) => d.addEventListener('click', () => { show(Number(d.dataset.i)); clearInterval(timer); autoPlay(); }));
+  const qio = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { clearInterval(timer); if (e.isIntersecting) autoPlay(); });
+  }, { threshold: 0.3 });
+  qio.observe(document.querySelector('.quotes'));
+  autoPlay();
+</script>
+</body>
+</html>
