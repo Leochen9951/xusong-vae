@@ -803,7 +803,7 @@
   </div>
 
   <h3 class="mv-subhead reveal">🎬 官方 MV · 在线播放</h3>
-  <p class="mv-subdesc reveal">由 Bilibili 官方播放器提供 · 全部来自许嵩本人与太合音乐的官方账号</p>
+  <p class="mv-subdesc reveal">由 Bilibili 官方播放器提供 · 全部来自许嵩本人与太合音乐的官方账号 · 同一时间仅一个 MV 播放，点击其他 MV 会自动暂停当前播放</p>
   <div class="mv-grid" id="mvGrid"></div>
 
   <h3 class="mv-subhead reveal">🎵 单曲 · 去官方平台听</h3>
@@ -932,6 +932,19 @@
       '<div class="mv-title">' + m.title + '</div>' +
       '<div class="mv-src">' + m.src + '</div>';
     mvGrid.appendChild(card);
+  });
+
+  /* MV 互斥播放：同一时间只允许一个播放器出声 */
+  const mvIframes = document.querySelectorAll('.mv-card iframe');
+  function pauseOtherMv(active) {
+    mvIframes.forEach((f) => {
+      if (f !== active) {
+        try { f.contentWindow.postMessage({ action: 'pause' }, '*'); } catch (e) {}
+      }
+    });
+  }
+  mvIframes.forEach((f) => {
+    f.addEventListener('click', () => pauseOtherMv(f));
   });
 
   /* ================= 音乐馆：官方平台直达 =================
