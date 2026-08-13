@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>许嵩 · 成名之路 — VAE</title>
+<style>
+  /* ============ 基础 & 变量 ============ */
+  :root {
+    --bg-light: #f5f5f7;
+    --bg-white: #ffffff;
+    --bg-dark: #000000;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --text-on-dark: #f5f5f7;
+    --text-on-dark-dim: #a1a1a6;
+    --accent: #2997ff;
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+            "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    color: var(--text-primary);
+    background: var(--bg-light);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: rgba(41, 151, 255, 0.28); }
+
+  /* ============ 导航栏（毛玻璃） ============ */
+  nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 52px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    background: rgba(251, 251, 253, 0.72);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    transition: background 0.4s var(--ease);
+  }
+  nav.scrolled { background: rgba(251, 251, 253, 0.9); }
+
+  .nav-logo {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-logo .mark {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f5f5f7, #1d1d1f 70%);
+    display: inline-block;
+  }
+  .nav-links { display: flex; gap: 34px; list-style: none; }
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s var(--ease);
+  }
+  .nav-links a:hover { color: var(--text-primary); }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+  }
+
+  /* ============ 通用章节 ============ */
+  .section-head {
+    text-align: center;
+    padding: 120px 24px 40px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .section-head .kicker {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .section-head h2 {
+    font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+  }
+  .section-head p {
+    margin-top: 20px;
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .section-light { background: var(--bg-white); }
+  .section-gray  { background: var(--bg-light); }
+  .section-dark  { background: var(--bg-dark); color: var(--text-on-dark); }
+  .section-dark .section-head p { color: var(--text-on-dark-dim); }
+
+  /* ============ Hero ============ */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(41, 151, 255, 0.14), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 85% 110%, rgba(180, 130, 255, 0.12), transparent 60%),
+      var(--bg-light);
+    padding: 92px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero .eyebrow {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.35em;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 26px;
+    animation: rise 1s var(--ease) 0.1s both;
+  }
+  .hero h1 {
+    font-size: clamp(4rem, 12vw, 9.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    background: linear-gradient(135deg, #1d1d1f 0%, #3a3a3e 55%, #1d1d1f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rise 1s var(--ease) 0.25s both;
+  }
+  .hero .sub {
+    margin-top: 22px;
+    font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+    font-weight: 500;
+    color: var(--text-secondary);
+    animation: rise 1s var(--ease) 0.4s both;
+  }
+  .hero .sub b { color: var(--text-primary); font-weight: 600; }
+  .hero .cta { margin-top: 44px; animation: rise 1s var(--ease) 0.55s both; }
+  .hero .cta a {
+    display: inline-block;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 10px 26px;
+    border-radius: 980px;
+    border: 1px solid rgba(41, 151, 255, 0.5);
+    transition: all 0.3s var(--ease);
+  }
+  .hero .cta a:hover { background: var(--accent); color: #fff; }
+
+  .hero .scroll-hint {
+    position: absolute;
+    bottom: 34px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px; height: 42px;
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    border-radius: 14px;
+    animation: rise 1s var(--ease) 0.8s both;
+  }
+  .hero .scroll-hint::after {
+    content: "";
+    position: absolute;
+    top: 8px; left: 50%;
+    width: 4px; height: 8px;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: rgba(0, 0, 0, 0.4);
+    animation: drip 1.8s ease-in-out infinite;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes drip {
+    0%, 100% { opacity: 0; transform: translateY(0); }
+    40% { opacity: 1; }
+    80% { opacity: 0; transform: translateY(16px); }
+  }
+
+  /* ============ 篇章 ============ */
+  .chapter {
+    padding: 110px 24px;
+    max-width: 1060px;
+    margin: 0 auto;
+  }
+  .chapter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  @media (max-width: 900px) { .chapter-grid { grid-template-columns: 1fr; gap: 40px; } }
+
+  .chapter-text .num {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .chapter-text h3 {
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 18px;
+  }
+  .chapter-text p {
+    font-size: 1.08rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+  }
+  .chapter-text p + p { margin-top: 14px; }
+  .chapter-text .year-tag {
+    display: inline-block;
+    margin-top: 22px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 7px 16px;
+    border-radius: 980px;
+  }
+  .section-dark .chapter-text .year-tag {
+    color: var(--text-on-dark);
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .chapter-visual { position: relative; }
+
+  .glow-card {
+    position: relative;
+    border-radius: 28px;
+    padding: 46px 38px;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.14);
+  }
+  .glow-card .card-title { font-size: 1.9rem; font-weight: 700; letter-spacing: -0.01em; color: #fff; }
+  .glow-card .card-sub { margin-top: 6px; font-size: 0.95rem; color: rgba(255, 255, 255, 0.75); }
+  .glow-card .orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.85; }
+
+  .gc-1 { background: linear-gradient(140deg, #0f2027, #203a43, #2c5364); }
+  .gc-1 .orb-a { width: 260px; height: 260px; background: #38bdf8; top: -60px; right: -40px; }
+  .gc-1 .orb-b { width: 200px; height: 200px; background: #f97316; bottom: -70px; left: -30px; }
+
+  .gc-2 { background: linear-gradient(140deg, #1e1b4b, #3730a3, #6d28d9); }
+  .gc-2 .orb-a { width: 240px; height: 240px; background: #a78bfa; top: -50px; left: 20%; }
+  .gc-2 .orb-b { width: 180px; height: 180px; background: #fb7185; bottom: -60px; right: -20px; }
+
+  .gc-3 { background: linear-gradient(140deg, #052e16, #14532d, #166534); }
+  .gc-3 .orb-a { width: 250px; height: 250px; background: #4ade80; top: -70px; right: -10%; }
+  .gc-3 .orb-b { width: 190px; height: 190px; background: #facc15; bottom: -60px; left: 10%; }
+
+  .gc-4 { background: linear-gradient(140deg, #3b0a0a, #7f1d1d, #b91c1c); }
+  .gc-4 .orb-a { width: 240px; height: 240px; background: #f87171; top: -60px; left: -20px; }
+  .gc-4 .orb-b { width: 200px; height: 200px; background: #fbbf24; bottom: -70px; right: -5%; }
+
+  .gc-5 { background: linear-gradient(140deg, #111827, #1f2937, #374151); }
+  .gc-5 .orb-a { width: 250px; height: 250px; background: #60a5fa; top: -70px; right: 15%; }
+  .gc-5 .orb-b { width: 200px; height: 200px; background: #f472b6; bottom: -60px; left: -30px; }
+
+  /* ============ 专辑卡片 ============ */
+  .album-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 26px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+  }
+  .album {
+    background: var(--bg-white);
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    transition: transform 0.45s var(--ease), box-shadow 0.45s var(--ease);
+  }
+  .album:hover { transform: translateY(-6px); box-shadow: 0 18px 44px rgba(0, 0, 0, 0.12); }
+  .album .cover {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    margin-bottom: 18px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .album .cover span {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  }
+  .album h4 { font-size: 1.15rem; font-weight: 600; margin-bottom: 4px; }
+  .album .meta { font-size: 0.85rem; color: var(--text-secondary); }
+  .album .song { margin-top: 10px; font-size: 0.85rem; color: var(--accent); font-weight: 500; }
+
+  .cover-1 { background: linear-gradient(135deg, #667eea, #764ba2); }
+  .cover-2 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+  .cover-3 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+  .cover-4 { background: linear-gradient(135deg, #fa709a, #fee140); }
+  .cover-5 { background: linear-gradient(135deg, #30cfd0, #330867); }
+  .cover-6 { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+  .cover-6 span { color: #333 !important; text-shadow: none !important; }
+
+  /* ============ 时间线 ============ */
+  .timeline-wrap { max-width: 760px; margin: 0 auto; padding: 20px 24px 130px; }
+  .timeline { position: relative; padding-left: 34px; }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 8px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: linear-gradient(180deg, rgba(41,151,255,0.5), rgba(41,151,255,0.05));
+  }
+  .tl-item { position: relative; padding-bottom: 52px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content: "";
+    position: absolute;
+    left: -32px; top: 6px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 5px rgba(41, 151, 255, 0.18);
+  }
+  .tl-item .year { font-size: 13px; font-weight: 600; letter-spacing: 0.14em; color: var(--accent); }
+  .tl-item h4 { font-size: 1.45rem; font-weight: 700; margin: 8px 0 10px; letter-spacing: -0.01em; }
+  .tl-item p { font-size: 1rem; line-height: 1.7; color: var(--text-secondary); }
+
+  /* ============ 歌词引语 ============ */
+  .quotes {
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 0%, rgba(41, 151, 255, 0.10), transparent 60%),
+      var(--bg-dark);
+    color: var(--text-on-dark);
+    text-align: center;
+    padding: 140px 24px;
+  }
+  .quotes .q-head {
+    font-size: clamp(2rem, 4.5vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 70px;
+  }
+  .quote-track { max-width: 860px; margin: 0 auto; position: relative; }
+  .quote-slide { display: none; }
+  .quote-slide.active { display: block; animation: rise 0.8s var(--ease) both; }
+  .quote-slide blockquote {
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    color: var(--text-on-dark);
+  }
+  .quote-slide .src {
+    margin-top: 22px;
+    font-size: 0.95rem;
+    color: var(--text-on-dark-dim);
+    letter-spacing: 0.08em;
+  }
+  .quote-dots { display: flex; justify-content: center; gap: 10px; margin-top: 44px; }
+  .quote-dots button {
+    width: 9px; height: 9px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.28);
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+    padding: 0;
+  }
+  .quote-dots button.active { background: #fff; transform: scale(1.35); }
+
+  /* ============ 结语 ============ */
+  .outro {
+    text-align: center;
+    padding: 150px 24px;
+    background: var(--bg-light);
+  }
+  .outro h2 {
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .outro h2 .grad {
+    background: linear-gradient(120deg, #2997ff, #a855f7, #f472b6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .outro p {
+    margin-top: 26px;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ============ Footer ============ */
+  footer {
+    background: var(--bg-light);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 44px 24px 140px;
+    text-align: center;
+  }
+  footer .foot-inner { max-width: 980px; margin: 0 auto; }
+  footer p { font-size: 12px; color: var(--text-secondary); line-height: 1.8; }
+
+  /* ============ 滚动显现 ============ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(36px);
+    transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal.delay-1 { transition-delay: 0.12s; }
+  .reveal.delay-2 { transition-delay: 0.24s; }
+  .reveal.delay-3 { transition-delay: 0.36s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* ================= 悬浮音乐播放器（Apple Music 风格） ================= */
+  .player {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    width: min(720px, calc(100vw - 24px));
+    z-index: 300;
+    background: rgba(28, 28, 30, 0.82);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border-radius: 22px;
+    padding: 14px 20px 12px;
+    color: var(--text-on-dark);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform 0.45s var(--ease), opacity 0.45s var(--ease);
+  }
+  .player.hidden { transform: translate(-50%, 120%); opacity: 0; pointer-events: none; }
+
+  .player-top { display: flex; align-items: center; gap: 14px; }
+
+  .vinyl {
+    flex: 0 0 auto;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, #444 0%, #222 55%, #111 100%);
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12), 0 2px 8px rgba(0,0,0,0.5);
+    position: relative;
+    animation: spin 5s linear infinite;
+    animation-play-state: paused;
+  }
+  .vinyl::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2997ff, #a855f7);
+  }
+  .vinyl::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle, transparent 0 3px, rgba(255,255,255,0.05) 3px 4px);
+  }
+  .player.playing .vinyl { animation-play-state: running; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .p-meta { flex: 1; min-width: 0; }
+  .p-title {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .p-album {
+    font-size: 12px;
+    color: var(--text-on-dark-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .p-time { font-size: 11px; color: var(--text-on-dark-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .p-bar {
+    margin: 10px 0 8px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.18);
+    cursor: pointer;
+    position: relative;
+  }
+  .p-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #2997ff, #a855f7);
+    position: relative;
+  }
+  .p-fill::after {
+    content: "";
+    position: absolute;
+    right: -5px; top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 6px rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .p-bar:hover .p-fill::after { opacity: 1; }
+
+  .p-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+  }
+  .p-controls button {
+    background: none;
+    border: none;
+    color: var(--text-on-dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.25s, transform 0.25s;
+    padding: 2px;
+  }
+  .p-controls button:hover { opacity: 0.75; transform: scale(1.08); }
+  .p-controls button:active { transform: scale(0.94); }
+
+  #btnPlay {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: #fff;
+    color: #1d1d1f !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  }
+  #btnPlay svg { width: 16px; height: 16px; }
+
+  #btnLoop {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 980px;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    color: var(--text-on-dark-dim);
+    min-width: 74px;
+    justify-content: center;
+  }
+  #btnLoop:hover { color: var(--text-on-dark); }
+  #btnLoop.on { color: #fff; border-color: var(--accent) !important; background: rgba(41,151,255,0.18); }
+
+  /* 提示条 & 首屏播放引导 */
+  .toast {
+    position: fixed;
+    bottom: 96px;
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    z-index: 400;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 980px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+    max-width: calc(100vw - 40px);
+    text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .play-banner {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-16px);
+    z-index: 400;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 12px 26px;
+    border-radius: 980px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    max-width: calc(100vw - 40px);
+    text-align: center;
+  }
+  .play-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .play-banner b { color: var(--accent); }
+
+  @media (max-width: 560px) {
+    .player { padding: 12px 14px 10px; }
+    .p-controls { gap: 16px; }
+    #btnLoop { min-width: 0; padding: 4px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= 导航 ================= -->
+<nav id="navbar">
+  <a class="nav-logo" href="#top">
+    <span class="mark"></span>
+    <span>许嵩 VAE</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#ch1">起点</a></li>
+    <li><a href="#ch2">破圈</a></li>
+    <li><a href="#albums">作品</a></li>
+    <li><a href="#ch3">主流</a></li>
+    <li><a href="#ch5">回响</a></li>
+    <li><a href="#timeline">年表</a></li>
+    <li><a href="#quotes">歌词</a></li>
+  </ul>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero" id="top">
+  <p class="eyebrow">Vae · 1986 — Present</p>
+  <h1>许嵩</h1>
+  <p class="sub">从网络上传歌的学生，到<b>时代唱作人</b><br>一条不走寻常路的成名之路</p>
+  <div class="cta"><a href="#ch1">开始阅读 ›</a></div>
+  <div class="scroll-hint"></div>
+</header>
+
+<!-- ================= 第一章：起点 ================= -->
+<section class="section-light" id="ch1">
+  <div class="chapter">
+    <div class="chapter-grid">
+      <div class="chapter-text reveal">
+        <span class="num">第一章 · 2006 — 2008</span>
+        <h3>起点：一个医学生的音乐梦</h3>
+        <p>1986 年生于安徽合肥的许嵩，就读于安徽医科大学。在人人写博客、音乐还要靠光盘传播的年代，他给自己取名「Vae」，把自制的歌曲一首首传到网上。</p>
+        <p>没有唱片公司，没有宣发预算，只有一台电脑、一副耳机，和一颗想要表达的心。谁也没想到，这些简陋的 Demo，会成为一代人青春的开端。</p>
+        <span class="year-tag">独立词 · 曲 · 编 · 唱</span>
+      </div>
+      <div class="chapter-visual reveal delay-1">
+        <div class="glow-card gc-1">
+          <span class="orb orb-a"></span>
+          <span class="orb orb-b"></span>
+          <div class="card-title">网络原住民</div>
+          <div class="card-sub">在互联网的角落，用音乐写下第一行代码</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第二章：破圈（深色） ================= -->
+<section class="section-dark" id="ch2">
+  <div class="section-head reveal">
+    <span class="kicker">Chapter 02 · 2009 — 2010</span>
+    <h2>破圈：网络时代的「三巨头」</h2>
+    <p>当主流乐坛还在电视上发光时，许嵩、汪苏泷、徐良的名字，已经悄悄占满了无数人的 MP3 和 QQ 空间背景音乐。</p>
+  </div>
+  <div class="chapter" style="padding-top: 20px;">
+    <div class="chapter-grid">
+      <div class="chapter-visual reveal">
+        <div class="glow-card gc-2">
+          <span class="orb orb-a"></span>
+          <span class="orb orb-b"></span>
+          <div class="card-title">词曲编唱一人包办</div>
+          <div class="card-sub">《自定义》—— 华语乐坛罕见的全创作专辑</div>
+        </div>
+      </div>
+      <div class="chapter-text reveal delay-1">
+        <span class="num">第一章 → 第二章</span>
+        <h3>第一张专辑，全网上线</h3>
+        <p>2009 年，许嵩首张个人专辑《自定义》未经任何公司包装，直接发布到网上——词、曲、编、混全部由他一人完成，这在当时几乎是不可思议的。</p>
+        <p>2010 年的《寻雾启示》继续发酵，《灰色头像》《素颜》成为校园里最流行的旋律。没有打榜、没有综艺，他用作品本身完成了最硬核的破圈。</p>
+        <span class="year-tag">《自定义》2009 · 《寻雾启示》2010</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 作品集 ================= -->
+<section class="section-gray" id="albums">
+  <div class="section-head reveal">
+    <span class="kicker">Selected Albums</span>
+    <h2>那些年，单曲循环过的专辑</h2>
+    <p>从青涩到成熟，十张专辑串起一条完整的成长轨迹。</p>
+  </div>
+  <div class="album-grid">
+    <div class="album reveal">
+      <div class="cover cover-1"><span>自定义</span></div>
+      <h4>《自定义》</h4>
+      <div class="meta">2009 · 首张全创作专辑</div>
+      <div class="song">代表曲：《有何不可》《城府》</div>
+    </div>
+    <div class="album reveal delay-1">
+      <div class="cover cover-2"><span>寻雾启示</span></div>
+      <h4>《寻雾启示》</h4>
+      <div class="meta">2010 · 网络爆红之年</div>
+      <div class="song">代表曲：《灰色头像》《素颜》</div>
+    </div>
+    <div class="album reveal delay-2">
+      <div class="cover cover-3"><span>苏格拉没有底</span></div>
+      <h4>《苏格拉没有底》</h4>
+      <div class="meta">2011 · 签约海蝶后首作</div>
+      <div class="song">代表曲：《想象之中》《千百度》</div>
+    </div>
+    <div class="album reveal">
+      <div class="cover cover-4"><span>梦游计</span></div>
+      <h4>《梦游计》</h4>
+      <div class="meta">2012 · 概念感之作</div>
+      <div class="song">代表曲：《胡萝卜须》《幻听》</div>
+    </div>
+    <div class="album reveal delay-1">
+      <div class="cover cover-5"><span>不如吃茶去</span></div>
+      <h4>《不如吃茶去》</h4>
+      <div class="meta">2014 · 山水之间</div>
+      <div class="song">代表曲：《山水之间》《惊鸿一面》</div>
+    </div>
+    <div class="album reveal delay-2">
+      <div class="cover cover-6"><span>青年晚报</span></div>
+      <h4>《青年晚报》</h4>
+      <div class="meta">2016 · 更成熟的表达</div>
+      <div class="song">代表曲：《雅俗共赏》《最佳歌手》</div>
+    </div>
+    <div class="album reveal">
+      <div class="cover cover-5"><span>寻宝游戏</span></div>
+      <h4>《寻宝游戏》</h4>
+      <div class="meta">2018 · 巡演再出发</div>
+      <div class="song">代表曲：《老古董》《明智之举》</div>
+    </div>
+    <div class="album reveal delay-1">
+      <div class="cover cover-3"><span>呼吸之野</span></div>
+      <h4>《呼吸之野》</h4>
+      <div class="meta">2021 · 概念完整之作</div>
+      <div class="song">代表曲：《乌鸦》《超市里的陷阱》</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第三章：主流 ================= -->
+<section class="section-light" id="ch3">
+  <div class="chapter">
+    <div class="chapter-grid">
+      <div class="chapter-text reveal">
+        <span class="num">第三章 · 2011 — 2013</span>
+        <h3>主流：被看见，仍做自己</h3>
+        <p>2011 年，许嵩签约海蝶音乐，正式从「网络歌手」走向职业音乐人。首张正式专辑《苏格拉没有底》延续了他的思辨与冷幽默。</p>
+        <p>当质疑声说「网络歌手难登大雅之堂」时，他用一张张原创专辑回应——不炒作、不上综艺，把话语权交还给作品本身。</p>
+        <span class="year-tag">从「网络歌手」到「职业音乐人」</span>
+      </div>
+      <div class="chapter-visual reveal delay-1">
+        <div class="glow-card gc-3">
+          <span class="orb orb-a"></span>
+          <span class="orb orb-b"></span>
+          <div class="card-title">被主流看见</div>
+          <div class="card-sub">不迎合，是他的姿态；作品，是他的名片</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第四章：沉淀 ================= -->
+<section class="section-dark" id="ch4">
+  <div class="section-head reveal">
+    <span class="kicker">Chapter 04 · 2014 — 2018</span>
+    <h2>沉淀：把热闹还给喧嚣</h2>
+    <p>流量一波波更替，他选择慢下来。《不如吃茶去》的禅意、《青年晚报》的社会观察、《寻宝游戏》的复古摩登，每一步都踩在自己的节奏上。</p>
+  </div>
+  <div class="chapter" style="padding-top: 20px;">
+    <div class="chapter-grid">
+      <div class="chapter-visual reveal">
+        <div class="glow-card gc-4">
+          <span class="orb orb-a"></span>
+          <span class="orb orb-b"></span>
+          <div class="card-title">不追热点，自成经典</div>
+          <div class="card-sub">《雅俗共赏》横扫各大榜单与颁奖礼</div>
+        </div>
+      </div>
+      <div class="chapter-text reveal delay-1">
+        <span class="num">第三章 → 第四章</span>
+        <h3>作品，是最好的答案</h3>
+        <p>这个阶段，许嵩开始频繁出现在央视与各大音乐颁奖礼上：从「网络歌手」到被主流奖项与媒体反复认可，他完成了身份的第三次跃迁。</p>
+        <p>但他依然很少出现在综艺里。粉丝们说：「他不追热点，因为他自己就是热点。」</p>
+        <span class="year-tag">主流奖项 × 央视舞台</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 第五章：回响 ================= -->
+<section class="section-light" id="ch5">
+  <div class="chapter">
+    <div class="chapter-grid">
+      <div class="chapter-text reveal">
+        <span class="num">第五章 · 2019 — 至今</span>
+        <h3>回响：万人合唱的青春</h3>
+        <p>2019「寻宝游戏」巡回演唱会、2023「呼吸之野」巡回演唱会，场场爆满。当全场万人齐唱《素颜》《有何不可》时，那不是追星，是集体回忆自己的青春。</p>
+        <p>从大学宿舍里的耳机，到体育场的聚光灯——这条路他走了十几年。而那个叫「Vae」的年轻人，始终没变。</p>
+        <span class="year-tag">巡演场场售罄 · 华语乐坛独树一帜</span>
+      </div>
+      <div class="chapter-visual reveal delay-1">
+        <div class="glow-card gc-5">
+          <span class="orb orb-a"></span>
+          <span class="orb orb-b"></span>
+          <div class="card-title">呼吸之野 · 现场</div>
+          <div class="card-sub">从耳机到体育场，一首歌唱了十几年</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 时间线 ================= -->
+<section class="section-gray" id="timeline">
+  <div class="section-head reveal">
+    <span class="kicker">Timeline</span>
+    <h2>成名之路 · 大事年表</h2>
+  </div>
+  <div class="timeline-wrap">
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <span class="year">1986</span>
+        <h4>生于合肥</h4>
+        <p>5 月 14 日出生于安徽省合肥市，学生时代便展现出音乐天赋。</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="year">2006</span>
+        <h4>「Vae」上线</h4>
+        <p>就读安徽医科大学期间，开始在网上发布原创歌曲，积累第一批听众。</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="year">2009</span>
+        <h4>《自定义》问世</h4>
+        <p>首张全创作专辑发布，词曲编唱一人包办，网络歌手时代开启。</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="year">2011</span>
+        <h4>签约海蝶音乐</h4>
+        <p>发布《苏格拉没有底》，正式迈入主流乐坛。</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="year">2014 — 2018</span>
+        <h4>三张专辑，三次转身</h4>
+        <p>《不如吃茶去》《青年晚报》《寻宝游戏》，风格日趋成熟，奖项与认可纷至沓来。</p>
+      </div>
+      <div class="tl-item reveal">
+        <span class="year">2021 — 至今</span>
+        <h4>《呼吸之野》与万人巡演</h4>
+        <p>概念专辑收获极高评价，「呼吸之野」巡回演唱会一票难求。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 歌词 ================= -->
+<section class="quotes" id="quotes">
+  <h2 class="q-head reveal">那些刻进青春的歌词</h2>
+  <div class="quote-track reveal">
+    <div class="quote-slide active">
+      <blockquote>「我寻你千百度，日出到迟暮，一瓢江湖我沉浮。」</blockquote>
+      <p class="src">——《千百度》· 2011</p>
+    </div>
+    <div class="quote-slide">
+      <blockquote>「断桥是否下过雪，我望着湖面，水中寒月如雪，指尖轻点融解。」</blockquote>
+      <p class="src">——《断桥残雪》· 2007</p>
+    </div>
+    <div class="quote-slide">
+      <blockquote>「俗的无畏，雅的轻狂，还不都是一副臭皮囊。」</blockquote>
+      <p class="src">——《雅俗共赏》· 2016</p>
+    </div>
+    <div class="quote-slide">
+      <blockquote>「为你唱这首歌，没有什么风格，它仅仅代表着，我想给你快乐。」</blockquote>
+      <p class="src">——《有何不可》· 2009</p>
+    </div>
+    <div class="quote-slide">
+      <blockquote>「如果再看你一眼，是否还会有感觉。」</blockquote>
+      <p class="src">——《素颜》· 2010</p>
+    </div>
+    <div class="quote-slide">
+      <blockquote>「飞上枝头的都风趣，占了巢的都在窃喜，但想到你，就不会勉强合群。」</blockquote>
+      <p class="src">——《乌鸦》· 2021</p>
+    </div>
+  </div>
+  <div class="quote-dots">
+    <button class="active" data-i="0" aria-label="歌词 1"></button>
+    <button data-i="1" aria-label="歌词 2"></button>
+    <button data-i="2" aria-label="歌词 3"></button>
+    <button data-i="3" aria-label="歌词 4"></button>
+    <button data-i="4" aria-label="歌词 5"></button>
+    <button data-i="5" aria-label="歌词 6"></button>
+  </div>
+</section>
+
+<!-- ================= 结语 ================= -->
+<section class="outro">
+  <h2 class="reveal">当旋律响起，<br><span class="grad">青春从未走远。</span></h2>
+  <p class="reveal delay-1">许嵩的成名之路，没有捷径，只有一首一首写下去的歌。他用十几年时间证明：在流量时代，真正的才华依然会被时间温柔以待。</p>
+</section>
+
+<!-- ================= Footer ================= -->
+<footer>
+  <div class="foot-inner">
+    <p>许嵩 · Vae 成名之路 — 致敬经典唱作人</p>
+    <p>本页面为设计演示，内容仅供学习参考 · 音乐作品版权归许嵩及所属公司所有</p>
+  </div>
+</footer>
+
+<!-- ================= 悬浮播放器 ================= -->
+<div class="toast" id="toast"></div>
+<div class="play-banner" id="playBanner">♪ 点击任意位置开始播放音乐</div>
+
+<div class="player" id="player">
+  <div class="player-top">
+    <div class="vinyl" id="vinyl"></div>
+    <div class="p-meta">
+      <div class="p-title" id="pTitle">素颜</div>
+      <div class="p-album" id="pAlbum">《寻雾启示》· 许嵩</div>
+    </div>
+    <div class="p-time" id="pTime">0:00 / 0:00</div>
+  </div>
+  <div class="p-bar" id="pBar"><div class="p-fill" id="pFill"></div></div>
+  <div class="p-controls">
+    <button id="btnPrev" aria-label="上一首" title="上一首">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 6h2v12H6zM20 6l-10 6 10 6z"/></svg>
+    </button>
+    <button id="btnPlay" aria-label="播放 / 暂停" title="播放 / 暂停（空格键）">
+      <svg id="iconPlay" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="iconPause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+    </button>
+    <button id="btnNext" aria-label="下一首" title="下一首">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M16 6h2v12h-2zM4 6l10 6-10 6z"/></svg>
+    </button>
+    <button id="btnLoop" aria-label="循环模式" title="循环模式">列表循环</button>
+    <button id="btnMute" aria-label="静音" title="静音">
+      <svg id="iconSound" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+      <svg id="iconMuted" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="display:none"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 1.2l2.1-2.1 1.4 1.4-2.1 2.1 2.1 2.1-1.4 1.4-2.1-2.1-2.1 2.1-1.4-1.4 2.1-2.1-2.1-2.1 1.4-1.4 2.1 2.1z"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+  /* ================= 播放列表配置 =================
+     将歌曲文件放入 audio/ 文件夹（文件名与下方 src 保持一致），
+     即可在网页右下角循环播放。支持 mp3 / m4a / ogg 等格式。 */
+  const PLAYLIST = [
+    { title: '素颜',     album: '《寻雾启示》',   src: 'audio/suyan.mp3' },
+    { title: '有何不可', album: '《自定义》',     src: 'audio/youhebukeyi.mp3' },
+    { title: '灰色头像', album: '《寻雾启示》',   src: 'audio/huisetouxiang.mp3' },
+    { title: '千百度',   album: '《苏格拉没有底》', src: 'audio/qianbaidu.mp3' },
+    { title: '断桥残雪', album: '网络单曲 · 2007', src: 'audio/duanqiaocanxue.mp3' },
+    { title: '雅俗共赏', album: '《青年晚报》',   src: 'audio/yasugongshang.mp3' },
+    { title: '乌鸦',     album: '《呼吸之野》',   src: 'audio/wuya.mp3' },
+  ];
+
+  /* ================= 播放器逻辑 ================= */
+  const audio   = document.getElementById('audio');
+  const player  = document.getElementById('player');
+  const pTitle  = document.getElementById('pTitle');
+  const pAlbum  = document.getElementById('pAlbum');
+  const pTime   = document.getElementById('pTime');
+  const pBar    = document.getElementById('pBar');
+  const pFill   = document.getElementById('pFill');
+  const btnPlay = document.getElementById('btnPlay');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const btnLoop = document.getElementById('btnLoop');
+  const btnMute = document.getElementById('btnMute');
+  const toast   = document.getElementById('toast');
+  const banner  = document.getElementById('playBanner');
+
+  let index = 0;
+  let loopMode = 'list'; // list | single | shuffle
+  let started = false;   // 用户是否已交互过（自动播放限制）
+
+  /* 加载第 i 首 */
+  function loadTrack(i) {
+    index = (i + PLAYLIST.length) % PLAYLIST.length;
+    const t = PLAYLIST[index];
+    audio.src = t.src;
+    pTitle.textContent = t.title;
+    pAlbum.textContent = t.album + ' · 许嵩';
+    if (started) {
+      audio.play().catch(() => showBanner());
+    }
+  }
+
+  function togglePlay() {
+    if (!started) { started = true; banner.classList.remove('show'); }
+    if (audio.paused) {
+      if (!audio.src) loadTrack(index);
+      audio.play().catch(() => showToast('无法播放：请检查 audio 文件夹中是否有对应歌曲文件'));
+    } else {
+      audio.pause();
+    }
+  }
+
+  function nextTrack() {
+    if (loopMode === 'shuffle') {
+      let n;
+      do { n = Math.floor(Math.random() * PLAYLIST.length); } while (PLAYLIST.length > 1 && n === index);
+      loadTrack(n);
+    } else {
+      loadTrack(index + 1);
+    }
+  }
+
+  function prevTrack() { loadTrack(index - 1); }
+
+  /* 切歌 & 循环 */
+  audio.addEventListener('ended', () => {
+    if (loopMode === 'single') { audio.currentTime = 0; audio.play(); }
+    else nextTrack();
+  });
+
+  /* 播放状态 UI */
+  audio.addEventListener('play', () => {
+    player.classList.add('playing');
+    document.getElementById('iconPlay').style.display = 'none';
+    document.getElementById('iconPause').style.display = '';
+  });
+  audio.addEventListener('pause', () => {
+    player.classList.remove('playing');
+    document.getElementById('iconPlay').style.display = '';
+    document.getElementById('iconPause').style.display = 'none';
+  });
+
+  /* 进度条 */
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    pFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    pTime.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    pTime.textContent = '0:00 / ' + fmt(audio.duration);
+  });
+
+  pBar.addEventListener('click', (e) => {
+    const r = pBar.getBoundingClientRect();
+    audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+  });
+
+  /* 循环模式：列表循环 → 单曲循环 → 随机 → 列表循环 */
+  const LOOP_LABEL = { list: '列表循环', single: '单曲循环', shuffle: '随机播放' };
+  btnLoop.addEventListener('click', () => {
+    loopMode = loopMode === 'list' ? 'single' : loopMode === 'single' ? 'shuffle' : 'list';
+    btnLoop.textContent = LOOP_LABEL[loopMode];
+    btnLoop.classList.toggle('on', loopMode !== 'list');
+    showToast('已切换为：' + LOOP_LABEL[loopMode]);
+  });
+
+  /* 静音 */
+  btnMute.addEventListener('click', () => {
+    audio.muted = !audio.muted;
+    document.getElementById('iconSound').style.display = audio.muted ? 'none' : '';
+    document.getElementById('iconMuted').style.display = audio.muted ? '' : 'none';
+  });
+
+  /* 控制按钮 */
+  btnPlay.addEventListener('click', togglePlay);
+  btnNext.addEventListener('click', nextTrack);
+  btnPrev.addEventListener('click', prevTrack);
+
+  /* 键盘控制：空格 播放/暂停，←/→ 切歌 */
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+    if (e.code === 'ArrowRight') nextTrack();
+    if (e.code === 'ArrowLeft') prevTrack();
+  });
+
+  /* 首屏自动播放（浏览器限制：需用户交互后才能出声） */
+  function tryAutoPlay() {
+    started = true;
+    banner.classList.remove('show');
+    if (!audio.src) loadTrack(0);
+    audio.play().catch(() => showToast('未能自动播放，请点击播放按钮'));
+  }
+  ['click', 'keydown', 'touchstart'].forEach((ev) => document.addEventListener(ev, tryAutoPlay, { once: false }));
+  audio.addEventListener('error', () => {
+    showToast('未找到音频文件：请将歌曲放入 audio/ 文件夹（如 audio/' + (PLAYLIST[index]?.src || 'suyan.mp3').replace('audio/', '') + '）');
+  });
+
+  /* 显示首屏引导横幅（自动播放被拦截时） */
+  audio.play().then(() => { started = true; banner.classList.remove('show'); })
+             .catch(() => banner.classList.add('show'));
+
+  /* 提示条 */
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+  function showBanner() { banner.classList.add('show'); }
+
+  function fmt(s) {
+    if (!isFinite(s) || s < 0) s = 0;
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ':' + String(sec).padStart(2, '0');
+  }
+
+  /* ================= 页面其它交互 ================= */
+  /* 导航栏滚动样式 */
+  const nav = document.getElementById('navbar');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* 滚动显现动画 */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+  /* 歌词轮播 */
+  const slides = document.querySelectorAll('.quote-slide');
+  const dots = document.querySelectorAll('.quote-dots button');
+  let current = 0;
+  let timer;
+
+  function show(i) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = i;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+  function autoPlay() { timer = setInterval(() => show((current + 1) % slides.length), 4200); }
+  dots.forEach((d) => {
+    d.addEventListener('click', () => {
+      show(Number(d.dataset.i));
+      clearInterval(timer);
+      autoPlay();
+    });
+  });
+
+  let quoteVisible = false;
+  const qio = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      quoteVisible = e.isIntersecting;
+      clearInterval(timer);
+      if (quoteVisible) autoPlay();
+    });
+  }, { threshold: 0.3 });
+  qio.observe(document.querySelector('.quotes'));
+  autoPlay();
+</script>
+</body>
+</html>
